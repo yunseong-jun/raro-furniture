@@ -121,9 +121,10 @@
 ```json
 {
   "categories": [{"code":"012","name":"세라믹 · 대리석 식탁","desc":"…","children":[{"code":"012002","name":"세라믹 식탁 세트"}], "guide":{"title":"…","body":"…"}}],
-  "products": [{"no":"1000000491","name":"허그 1400 포세린 통 세라믹 4인 식탁 세트","cate":"012002","thumb":"https://…_300.jpg","price":398000,"listPrice":500000,"tags":["세트"],"series":"허그",
-                "size":1400,"seats":4,"shape":"사각","top":"무광 세라믹","kind":"세트",
-                "gallery":["…_1000_1.jpg"],"detailImages":["…"],"options":[{"name":"식탁+의자4","delta":0}],"shipping":"배송비 40,000원 (수령 시 결제)","spec":{"상판":"…"},"features":[{"title":"…","body":"…","img":"…"}]}],
+  "products": [{"no":"1000000491","name":"허그 1400 포세린 통 세라믹 4인 식탁 세트","cate":"012002","top":"012","image":"https://…_400.jpg","price":398000,"listPrice":500000,"reviewCount":84,"colors":[{"name":"흰색","hex":"#FFFFFF"}],"tags":["무료배송"],
+                "series":"허그","size":1400,"seats":4,"shape":"사각","material":"무광 세라믹","kind":"세트","priceBand":"30–50만원",
+                "detail":{"gallery":["…_1000_1.jpg"],"detailImages":["…"],"options":[{"name":"식탁+의자4","delta":null}],"shipping":"40,000원 / 상품수령시결제(착불)","spec":{"KC 인증정보":"…"},"reviewCount":12,"qnaCount":3},
+                "features":[{"title":"…","body":"…"}]}],
   "home": {"hero":[…],"weekly":["goodsNo"…],"best":[…],"new":[…],"lookbook":[…],"reviews":[…]},
   "company": {"name":"㈜퍼니우스","ceo":"전재국","address":"경기도 파주시 고봉로 721-50","showroom":"경기도 고양시 일산동구 고봉로 757-11","tel":"031-977-7352","email":"furnius946@naver.com","bizNo":"668-86-00834","mailOrderNo":"제 2018-경기파주-0229호"}
 }
