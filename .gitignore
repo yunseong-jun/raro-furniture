@@ -1,0 +1,4 @@
+.superpowers/
+.firecrawl/
+__pycache__/
+*.log
