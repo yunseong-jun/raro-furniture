@@ -176,7 +176,7 @@ window.RARO = (function () {
     opts = opts || {};
     el.innerHTML = list.length
       ? list.map((p, i) => cardHTML(p, Object.assign({}, opts, { eager: opts.eager || (opts.eagerFirst && i < 4) }))).join('')
-      : '<div class="list__empty">조건에 맞는 상품이 없습니다.</div>';
+      : '<div class="list__empty">' + esc(opts.empty || '조건에 맞는 상품이 없습니다.') + '</div>';
   }
   function img(src, alt, cls, eager) {
     const loadAttr = eager === 'low' ? 'loading="lazy" fetchpriority="low"' : eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
@@ -402,8 +402,10 @@ window.RARO = (function () {
     });
     sortEl.addEventListener('change', () => {
       shown = 12; render();
-      const u = new URL(location.href); u.searchParams.set('sort', sortEl.value);
-      history.replaceState(null, '', u);
+      try {
+        const u = new URL(location.href); u.searchParams.set('sort', sortEl.value);
+        history.replaceState(null, '', u);
+      } catch (e) {}
     });
     moreBtn.addEventListener('click', () => { shown += 12; render(); });
     /* 모바일 필터 시트 */
@@ -444,8 +446,11 @@ window.RARO = (function () {
   };
 
   pages.view = function (data) {
-    const p = product(param('no')) || product(data.home.best[0]);
+    const requestedNo = param('no');
+    const foundByNo = requestedNo ? product(requestedNo) : undefined;
+    const p = foundByNo || product(data.home.best[0]);
     if (!p) return;
+    const notFound = !!requestedNo && !foundByNo;
     const d = p.detail || { gallery: [], options: [], optionLabel: '', optionLevels: 0, detailImages: [], spec: {}, shipping: '', reviewCount: p.reviewCount, qnaCount: 0 };
     const gallery = d.gallery.length ? d.gallery : [p.imageLarge || p.image];
     const rate = discountRate(p.price, p.listPrice);
@@ -453,15 +458,22 @@ window.RARO = (function () {
     const soldOut = (p.tags || []).includes('품절');
     document.title = p.name + ' — 라로퍼니처';
     const el = document.querySelector('[data-pdp]');
+    if (notFound) {
+      const notice = document.createElement('div');
+      notice.className = 'notice';
+      notice.textContent = '찾는 상품이 없어 인기 상품을 보여드립니다.';
+      el.parentNode.insertBefore(notice, el);
+    }
+    let oi = Math.max(0, d.options.findIndex((o) => o.delta === 0));
     const optionPrice = (o, i) => {
-      if (o.delta != null) return o.delta === 0 ? fmt(p.price) : (o.delta > 0 ? '+' : '−') + fmt(Math.abs(o.delta));
-      return i === 0 ? fmt(p.price) : '<span class="muted">옵션 선택 시 표시</span>';
+      if (o.delta != null) return fmt(p.price + o.delta);
+      return i === oi ? fmt(p.price) : '<span class="muted">옵션 선택 시 표시</span>';
     };
     el.innerHTML = '<div class="crumb"><a href="index.html">홈</a> › <a href="list.html?cate=' + p.top + '">' + esc(topName(p.top))
       + '</a> › <a href="list.html?cate=' + p.cate + '">' + esc(childName(p.cate)) + '</a></div>'
       + '<div class="gallery"><div class="gallery__main">' + img(gallery[0], p.name, null, true)
       + (gallery.length > 1 ? '<button class="gallery__nav gallery__nav--prev" type="button" aria-label="이전 사진">‹</button><button class="gallery__nav gallery__nav--next" type="button" aria-label="다음 사진">›</button>' : '')
-      + '</div>' + (gallery.length > 1 ? '<div class="gallery__thumbs">' + gallery.slice(0, 6).map((g, i) =>
+      + '</div>' + (gallery.length > 1 ? '<div class="gallery__thumbs">' + gallery.map((g, i) =>
         '<button type="button"' + (i === 0 ? ' class="is-active" aria-current="true"' : '') + ' data-i="' + i + '" aria-label="' + (i + 1) + '번 사진">' + img(g, p.name + ' ' + (i + 1)) + '</button>').join('') + '</div>' : '') + '</div>'
       + '<div class="buy"><span class="label">' + esc(childName(p.cate)) + (p.series ? ' · ' + esc(p.series) : '') + '</span>'
       + '<h1 class="buy__name">' + esc(p.name) + '</h1>'
@@ -469,10 +481,10 @@ window.RARO = (function () {
       + '<div class="buy__price">' + (rate ? '<span class="rate">' + rate + '%</span>' : '') + fmt(p.price) + (p.listPrice ? '<del>' + fmt(p.listPrice) + '</del>' : '') + '</div>'
       + '<div class="buy__ship">' + (d.shipping ? '배송비 ' + esc(d.shipping) : '배송비는 옵션 선택 후 표시됩니다') + '</div>'
       + (d.options.length ? '<span class="label">' + esc(d.optionLabel || '구성 선택') + '</span><div data-options role="radiogroup" aria-label="' + esc(d.optionLabel || '구성 선택') + '">' + d.options.map((o, i) =>
-        '<div class="opt' + (i === 0 ? ' is-on' : '') + '" data-i="' + i + '" role="radio" aria-checked="' + (i === 0) + '" tabindex="0"><span>' + esc(o.name) + '</span><b>' + optionPrice(o, i) + '</b></div>').join('') + '</div>'
+        '<div class="opt' + (i === oi ? ' is-on' : '') + '" data-i="' + i + '" role="radio" aria-checked="' + (i === oi) + '" tabindex="' + (i === oi ? '0' : '-1') + '"><span>' + esc(o.name) + '</span><b>' + optionPrice(o, i) + '</b></div>').join('') + '</div>'
         + (d.optionLevels > 1 ? '<p class="muted" style="font-size:12px;margin-top:6px">색상 등 추가 옵션은 실제 사이트에서 다음 단계로 선택합니다. (확인 필요)</p>' : '') : '')
       + (p.colors && p.colors.length ? '<span class="label">색상</span><div class="swatches" role="radiogroup" aria-label="색상">' + p.colors.map((c, i) =>
-        '<button type="button" class="swatch' + (i === 0 ? ' is-on' : '') + '" role="radio" aria-checked="' + (i === 0) + '" style="background:' + esc(c.hex) + '" title="' + esc(c.name) + '" aria-label="' + esc(c.name) + '"></button>').join('') + '</div>' : '')
+        '<button type="button" class="swatch' + (i === 0 ? ' is-on' : '') + '" role="radio" aria-checked="' + (i === 0) + '" tabindex="' + (i === 0 ? '0' : '-1') + '" style="background:' + esc(c.hex) + '" title="' + esc(c.name) + '" aria-label="' + esc(c.name) + '"></button>').join('') + '</div>' : '')
       + '<div class="buy__qty"><span>수량</span><div class="qty"><button type="button" data-qty="-1" aria-label="수량 줄이기">−</button><span data-qty-val aria-live="polite">1</span><button type="button" data-qty="1" aria-label="수량 늘리기">+</button></div></div>'
       + '<div class="buy__total"><span>총 상품 금액</span><b data-total aria-live="polite">' + fmt(p.price) + '</b></div>'
       + '<div class="buy__actions"><a class="btn btn--secondary" href="#">장바구니</a><a class="btn btn--primary" href="#">' + (soldOut ? '재입고 알림 받기' : '바로 구매') + '</a>'
@@ -484,15 +496,16 @@ window.RARO = (function () {
     const main = el.querySelector('.gallery__main img'), thumbs = el.querySelectorAll('.gallery__thumbs button');
     const show = (i) => {
       gi = (i + gallery.length) % gallery.length;
-      if (main) main.src = gallery[gi];
+      if (main) { main.src = gallery[gi]; main.alt = p.name + ' ' + (gi + 1); }
       thumbs.forEach((t) => { const on = Number(t.dataset.i) === gi; t.classList.toggle('is-active', on); if (on) t.setAttribute('aria-current', 'true'); else t.removeAttribute('aria-current'); });
+      const activeThumb = thumbs[gi]; if (activeThumb) activeThumb.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     };
     thumbs.forEach((t) => t.addEventListener('click', () => show(Number(t.dataset.i))));
     const prev = el.querySelector('.gallery__nav--prev'), next = el.querySelector('.gallery__nav--next');
     if (prev) prev.addEventListener('click', () => show(gi - 1));
     if (next) next.addEventListener('click', () => show(gi + 1));
     /* 옵션 · 수량 · 총액 */
-    let oi = 0, qty = 1;
+    let qty = 1;
     const buybar = document.querySelector('[data-buybar]');
     document.body.classList.add('has-buybar');
     buybar.innerHTML = '<div><div class="muted" style="font-size:12px">총 상품 금액</div><b>' + fmt(p.price) + '</b></div><a class="btn btn--primary" href="#">' + (soldOut ? '재입고 알림' : '구매하기') + '</a>';
@@ -502,21 +515,63 @@ window.RARO = (function () {
       el.querySelector('[data-total]').textContent = t;
       buybar.querySelector('b').textContent = t;
     };
+    total();
     const optsEl = el.querySelector('[data-options]');
-    const selectOpt = (o) => {
+    const selectOpt = (o, focus) => {
       oi = Number(o.dataset.i);
-      optsEl.querySelectorAll('.opt').forEach((x) => { x.classList.toggle('is-on', x === o); x.setAttribute('aria-checked', String(x === o)); });
+      optsEl.querySelectorAll('.opt').forEach((x) => {
+        const on = x === o;
+        x.classList.toggle('is-on', on);
+        x.setAttribute('aria-checked', String(on));
+        x.setAttribute('tabindex', on ? '0' : '-1');
+      });
+      if (focus) o.focus();
       total();
     };
     if (optsEl) {
       optsEl.addEventListener('click', (e) => { const o = e.target.closest('.opt'); if (o) selectOpt(o); });
-      optsEl.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key === 'Enter') { const o = e.target.closest('.opt'); if (o) { e.preventDefault(); selectOpt(o); } } });
+      optsEl.addEventListener('keydown', (e) => {
+        const o = e.target.closest('.opt'); if (!o) return;
+        const opts = Array.from(optsEl.querySelectorAll('.opt'));
+        const idx = opts.indexOf(o);
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); selectOpt(o); return; }
+        let tgt = null;
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') tgt = opts[(idx + 1) % opts.length];
+        else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') tgt = opts[(idx - 1 + opts.length) % opts.length];
+        else if (e.key === 'Home') tgt = opts[0];
+        else if (e.key === 'End') tgt = opts[opts.length - 1];
+        if (tgt) { e.preventDefault(); selectOpt(tgt, true); }
+      });
     }
     el.querySelectorAll('[data-qty]').forEach((b) => b.addEventListener('click', () => {
       qty = Math.max(1, qty + Number(b.dataset.qty)); el.querySelector('[data-qty-val]').textContent = qty; total();
     }));
     const sw = el.querySelector('.swatches');
-    if (sw) sw.addEventListener('click', (e) => { const s = e.target.closest('.swatch'); if (!s) return; sw.querySelectorAll('.swatch').forEach((x) => { x.classList.toggle('is-on', x === s); x.setAttribute('aria-checked', String(x === s)); }); });
+    const selectSwatch = (s, focus) => {
+      const swatches = Array.from(sw.querySelectorAll('.swatch'));
+      swatches.forEach((x) => {
+        const on = x === s;
+        x.classList.toggle('is-on', on);
+        x.setAttribute('aria-checked', String(on));
+        x.setAttribute('tabindex', on ? '0' : '-1');
+      });
+      if (focus) s.focus();
+    };
+    if (sw) {
+      sw.addEventListener('click', (e) => { const s = e.target.closest('.swatch'); if (s) selectSwatch(s); });
+      sw.addEventListener('keydown', (e) => {
+        const s = e.target.closest('.swatch'); if (!s) return;
+        const swatches = Array.from(sw.querySelectorAll('.swatch'));
+        const idx = swatches.indexOf(s);
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); selectSwatch(s); return; }
+        let tgt = null;
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') tgt = swatches[(idx + 1) % swatches.length];
+        else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') tgt = swatches[(idx - 1 + swatches.length) % swatches.length];
+        else if (e.key === 'Home') tgt = swatches[0];
+        else if (e.key === 'End') tgt = swatches[swatches.length - 1];
+        if (tgt) { e.preventDefault(); selectSwatch(tgt, true); }
+      });
+    }
     /* 탭 카운트 + 스크롤 스파이 */
     document.querySelector('[data-rc]').textContent = reviewCount;
     document.querySelector('[data-qc]').textContent = d.qnaCount || 0;
@@ -526,8 +581,9 @@ window.RARO = (function () {
     window.addEventListener('scroll', () => {
       if (ticking) return; ticking = true;
       requestAnimationFrame(() => {
-        const y = window.scrollY + 180; let idx = 0;
-        secs.forEach((s, i) => { if (s && s.offsetTop <= y) idx = i; });
+        const headerOffset = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) + 60;
+        let idx = 0;
+        secs.forEach((s, i) => { if (s && s.getBoundingClientRect().top <= headerOffset) idx = i; });
         tabLinks.forEach((a, i) => { a.classList.toggle('is-active', i === idx); if (i === idx) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
         ticking = false;
       });
@@ -548,7 +604,7 @@ window.RARO = (function () {
     }
     /* 사양 · 치수: 값이 있는 항목만 */
     const rows = {};
-    if (p.size) rows['사이즈'] = (p.sizes && p.sizes.length > 1 ? p.sizes.join(' / ') : p.size) + (p.seats ? ' · ' + p.seats + '인' : '');
+    if (p.size) rows['사이즈'] = (p.sizes && p.sizes.length > 1 ? p.sizes.join(' / ') : p.size) + ' mm' + (p.seats ? ' · ' + p.seats + '인' : '');
     if (p.material) rows['소재'] = p.material;
     if (p.shape) rows['형태'] = p.shape;
     if (p.kind) rows['구성'] = p.kind;
@@ -557,20 +613,25 @@ window.RARO = (function () {
     document.querySelector('[data-spec]').innerHTML = '<div class="spec__figure">치수 도면 (' + (p.size ? 'W' + p.size + ' — 확인 필요' : '상세 이미지 참조') + ')</div>'
       + '<table><tbody>' + Object.entries(rows).map(([k, v]) => '<tr><th scope="row">' + esc(k) + '</th><td>' + esc(v) + '</td></tr>').join('') + '</tbody></table>';
     document.querySelector('[data-ship-text]').textContent = d.shipping ? '배송비 ' + d.shipping : '배송비는 옵션 선택 후 표시됩니다.';
-    document.querySelector('[data-as-text]').textContent = d.spec['AS 책임자와 전화번호'] || ('라로퍼니처 고객센터 ' + data.company.tel);
+    const asRaw = d.spec['AS 책임자와 전화번호'] || ('라로퍼니처 고객센터 ' + data.company.tel);
+    document.querySelector('[data-as-text]').textContent = asRaw.replace(/\s*\)\s*/, ') ').replace(/\s+-\s+/g, '-');
     /* 리뷰 요약: 별점 집계는 사이트에 없으므로 개수만 */
     const mine = data.home.reviews.filter((r) => r.goodsNo === p.no);
     document.querySelector('[data-rsum]').innerHTML = '<div><div class="rsum__score">' + reviewCount + '<small style="font-size:16px"> 개</small></div>'
-      + '<div class="rsum__stars">' + (reviewCount ? stars(5) : '') + '</div><div class="muted" style="font-size:13px;margin-top:6px">별점 평균과 분포는 실제 사이트 리뷰 게시판 연동 시 표시됩니다. (확인 필요)</div></div>'
+      + '<div class="muted" style="font-size:13px;margin-top:6px">별점 평균과 분포는 실제 사이트 리뷰 게시판 연동 시 표시됩니다. (확인 필요)</div></div>'
       + '<div class="rsum__photos">' + mine.map((r) => '<div class="review"><div class="review__img">' + img(r.img, '후기 사진') + '</div><p class="review__text">' + esc(r.text) + '</p></div>').join('')
       + Array.from({ length: Math.max(0, 4 - mine.length) }).map(() => '<div class="ph">사진 후기</div>').join('') + '</div>';
     /* 함께 보기 */
     const series = data.products.filter((x) => x.no !== p.no && x.series && x.series === p.series).slice(0, 4);
     document.querySelector('[data-series-title]').textContent = series.length ? p.series + ' 시리즈 함께 보기' : '같은 카테고리 인기 상품';
-    renderCards(document.querySelector('[data-series]'), series.length ? series : sortProducts(data.products.filter((x) => inCate(x, p.cate) && x.no !== p.no), 'popular').slice(0, 4));
+    renderCards(document.querySelector('[data-series]'), series.length ? series : sortProducts(data.products.filter((x) => inCate(x, p.cate) && x.no !== p.no), 'popular').slice(0, 4), { empty: '추천 상품이 없습니다.' });
     const similar = data.products.filter((x) => x.no !== p.no && x.top === p.top && x.price && !series.includes(x))
       .sort((a, b) => Math.abs(a.price - p.price) - Math.abs(b.price - p.price)).slice(0, 4);
-    renderCards(document.querySelector('[data-similar]'), similar);
+    renderCards(document.querySelector('[data-similar]'), similar, { empty: '추천 상품이 없습니다.' });
+    /* 앵커 이동: 탭 링크의 #sec-… 해시로 진입한 경우 */
+    if (/^#sec-/.test(location.hash)) {
+      requestAnimationFrame(() => { const t = document.querySelector(location.hash); if (t) t.scrollIntoView(); });
+    }
   };
 
   pages.brand = function (data) {
