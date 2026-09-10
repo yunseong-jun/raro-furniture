@@ -534,7 +534,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Create: `data/site.json` (실행 결과)
 - Modify: `tests/test_build.py` (조립 테스트 1개 추가)
 
-- [ ] **Step 1: 조립 로직 테스트 추가**
+- [x] **Step 1: 조립 로직 테스트 추가**
 
 `tests/test_build.py` 맨 아래 `if __name__` 위에 추가:
 ```python
@@ -566,12 +566,12 @@ class AssembleTest(unittest.TestCase):
             self.assertIn(top["code"], build.FEATURES)
 ```
 
-- [ ] **Step 2: 테스트 실패 확인**
+- [x] **Step 2: 테스트 실패 확인**
 
 Run: `PYTHONIOENCODING=utf-8 python -m unittest tests.test_build.AssembleTest -v`
 Expected: `AttributeError: module 'build' has no attribute 'assemble_product'`
 
-- [ ] **Step 3: 상수와 조립·수집 코드 추가**
+- [x] **Step 3: 상수와 조립·수집 코드 추가**
 
 `data/build.py` 맨 아래에 추가:
 ```python
@@ -770,17 +770,17 @@ if __name__ == "__main__":
     build(offline="--offline" in sys.argv)
 ```
 
-- [ ] **Step 4: 테스트 통과 확인**
+- [x] **Step 4: 테스트 통과 확인**
 
 Run: `PYTHONIOENCODING=utf-8 python -m unittest tests.test_build -v`
 Expected: `Ran 12 tests … OK`
 
-- [ ] **Step 5: 실제 수집 실행**
+- [x] **Step 5: 실제 수집 실행**
 
 Run: `PYTHONIOENCODING=utf-8 python data/build.py`
 Expected: `fetched` 줄이 19(목록) + 12(상세) + 1(홈) = 32개 출력된 뒤 요약. 상품 수는 300개 안팎(소분류당 40개 상한), 상세 12개, 후기 1개 이상, 가격 누락 0개. `home.*` 경고가 나오면 해당 goodsNo가 어느 목록 첫 페이지에도 없는 것이므로 `HOME` 상수에서 빼고 다시 실행한다(`--offline`으로 재실행하면 네트워크 없이 재조립됨).
 
-- [ ] **Step 6: 결과 확인**
+- [x] **Step 6: 결과 확인**
 
 Run:
 ```bash
@@ -788,7 +788,7 @@ PYTHONIOENCODING=utf-8 python -c "import json;d=json.load(open('data/site.json',
 ```
 Expected: `허그 1400 포세린 통 세라믹 4인 식탁 세트 398000 500000 1400 4 무광 세라믹 세트`, 갤러리 4개 이상, 상세 이미지 1개 이상, 옵션 3개, 히어로 2번째 이미지가 `…1000001395_1000_1.jpg`, 후기 dict 출력.
 
-- [ ] **Step 7: 커밋**
+- [x] **Step 7: 커밋**
 
 ```bash
 git add data/build.py data/site.json tests/test_build.py && git commit -m "feat(data): 사이트 수집·조립 스크립트와 site.json 생성

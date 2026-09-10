@@ -103,6 +103,21 @@ class ParseListTest(unittest.TestCase):
     def test_empty_input_returns_empty_list(self):
         self.assertEqual(build.parse_list(""), [])
 
+    def test_last_block_does_not_run_past_list_close(self):
+        # 목록 </ul> 뒤에 다른 위젯(예: 후기 카운트)이 이어져도 마지막 상품 블록이
+        # 거기까지 먹어치우면 안 된다.
+        page = LIST_HTML + '</ul><div class="item_review_cnt">REVIEW : 99</div>'
+        items = build.parse_list(page)
+        self.assertEqual(len(items), 3)
+        self.assertNotEqual(items[-1]["reviewCount"], 99)
+
+    def test_skipped_blocks_are_counted_in_stats(self):
+        stats = {"skipped": 0}
+        page = LIST_HTML + '<li><div class="item_cont"><div class="item_photo_box"></div></div></li>'
+        items = build.parse_list(page, stats)
+        self.assertEqual(len(items), 3)
+        self.assertEqual(stats["skipped"], 1)
+
 
 class ParseDetailTest(unittest.TestCase):
     def test_fields(self):
@@ -186,6 +201,34 @@ class PriceBandTest(unittest.TestCase):
         self.assertEqual(build.price_band(398000), "30–50만원")
         self.assertEqual(build.price_band(689000), "50만원 이상")
         self.assertIsNone(build.price_band(None))
+
+
+class AssembleTest(unittest.TestCase):
+    def test_assemble_product_merges_detail_and_attrs(self):
+        item = {"no": "1000000491", "name": "허그 1400 포세린 통 세라믹 4인 식탁 세트",
+                "image": "t.jpg", "price": 398000, "listPrice": None, "reviewCount": 84,
+                "colors": [], "tags": []}
+        p = build.assemble_product(item, cate="012002", top="012")
+        self.assertEqual(p["cate"], "012002")
+        self.assertEqual(p["top"], "012")
+        self.assertEqual(p["series"], "허그")
+        self.assertEqual(p["priceBand"], "30–50만원")
+        self.assertNotIn("detail", p)
+        detail = {"name": "x", "price": 398000, "listPrice": 500000, "shipping": "40,000원",
+                  "gallery": ["g1.jpg", "g2.jpg"], "options": [], "detailImages": [], "spec": {},
+                  "reviewCount": 12, "qnaCount": 3}
+        build.attach_detail(p, detail)
+        self.assertEqual(p["listPrice"], 500000)
+        self.assertEqual(p["detail"]["gallery"], ["g1.jpg", "g2.jpg"])
+        self.assertEqual(len(p["features"]), 3)
+        self.assertEqual(p["reviewCount"], 84)
+
+    def test_categories_have_required_text(self):
+        for top in build.CATEGORIES:
+            self.assertTrue(top["desc"])
+            self.assertTrue(top["guide"]["title"] and top["guide"]["body"])
+            self.assertTrue(top["children"])
+            self.assertIn(top["code"], build.FEATURES)
 
 
 if __name__ == "__main__":
