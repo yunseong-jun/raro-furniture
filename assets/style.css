@@ -10,7 +10,7 @@
   --cream: #F6F2EA;
   --ink: #2B2B2B;
   --ink-2: #555555;
-  --ink-3: #999999;
+  --ink-3: #767676;   /* 4.5:1 대비 확보 */
   --line: #E8E6E1;
   --accent: #C4613A;
   --footer: #262321;
@@ -19,7 +19,7 @@
   --container: 1400px;
   --gutter: 24px;
   --section: 96px;
-  --header-h: 112px;
+  --header-h: 113px;   /* 72 + 40 + 1px 보더 */
   --font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
   --mono: "JetBrains Mono", Consolas, "Courier New", monospace;
@@ -115,7 +115,7 @@ del { text-decoration: line-through; }
 .hdr__sub li a { display: block; padding: 8px 18px; font-size: 14px; color: var(--ink-2); }
 .hdr__sub li a:hover { background: var(--tile); color: var(--ink); }
 .has-sub:hover .hdr__sub, .has-sub:focus-within .hdr__sub { display: block; }
-.hdr.is-compact .hdr__top { height: 60px; }
+.hdr.is-compact .hdr__top { height: 72px; }   /* 스티키 오프셋(--header-h)과 어긋나지 않도록 높이는 고정 */
 .drawer { position: fixed; inset: 0; z-index: 60; display: none; }
 .drawer.is-open { display: block; }
 .drawer__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.4); }
@@ -289,6 +289,7 @@ del { text-decoration: line-through; }
 .buybar { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; background: #fff; border-top: 1px solid var(--line);
           padding: 10px var(--gutter); align-items: center; justify-content: space-between; gap: 12px; }
 .buybar b { font-size: 18px; }
+body.has-buybar .chat-fab { bottom: 84px; }   /* 하단 구매 바와 겹치지 않게 */
 
 /* ---------- 11. 브랜드 ---------- */
 .bhero { position: relative; height: 440px; overflow: hidden; background: #2E2C2A; }
@@ -324,12 +325,12 @@ del { text-decoration: line-through; }
 /* ---------- 13. 유틸 ---------- */
 .mt-8 { margin-top: 8px; } .mt-16 { margin-top: 16px; } .mt-24 { margin-top: 24px; } .mt-40 { margin-top: 40px; }
 .center { text-align: center; }
-.hide-m { } .show-m { display: none !important; }
+.show-m { display: none !important; }
 .notice { padding: 40px; text-align: center; color: var(--ink-3); background: var(--tile); border-radius: var(--radius-sm); }
 
 /* ---------- 14. 반응형 ---------- */
 @media (max-width: 1024px) {
-  :root { --header-h: 104px; }
+  :root { --header-h: 105px; }
   .grid--4, .grid--5 { grid-template-columns: repeat(3, 1fr); }
   .scroll-row { grid-auto-columns: calc((100% - 2 * 20px) / 3); }
   .hdr__util a span { display: none; }
@@ -341,7 +342,7 @@ del { text-decoration: line-through; }
   .space__big { grid-column: 1 / -1; }
 }
 @media (max-width: 768px) {
-  :root { --gutter: 16px; --section: 56px; --header-h: 60px; }
+  :root { --gutter: 16px; --section: 56px; --header-h: 61px; }
   body { font-size: 14px; }
   .h1 { font-size: 30px; } .h2 { font-size: 22px; }
   .sec__head { margin-bottom: 18px; }
@@ -364,12 +365,12 @@ del { text-decoration: line-through; }
   .space { grid-template-columns: 1fr 1fr; gap: 12px; }
   .list__body { grid-template-columns: 1fr; gap: 0; margin-top: 20px; }
   .filters { position: fixed; left: 0; right: 0; bottom: 0; top: auto; max-height: 82vh; background: #fff; border-radius: 16px 16px 0 0;
-             padding: 20px; transform: translateY(100%); transition: transform .3s; z-index: 61; overflow: auto; }
+             padding: 20px; transform: translateY(100%); transition: transform .3s; z-index: 63; overflow: auto; }
   .filters.is-open { transform: none; }
   .filters__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-weight: 700; }
   .filters__head button { border: 0; background: none; font-size: 20px; }
   .filters__apply { display: block; margin-top: 12px; }
-  .filters__backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 60; display: none; }
+  .filters__backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 62; display: none; }
   .filters__backdrop.is-open { display: block; }
   .toolbar__filter-btn { display: inline-flex; }
   .pdp { grid-template-columns: 1fr; gap: 20px; padding-top: 12px; }
