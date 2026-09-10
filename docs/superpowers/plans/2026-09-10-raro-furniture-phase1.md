@@ -1226,7 +1226,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 
 `app.js`는 즉시실행함수 하나로 `window.RARO`를 만든다. 페이지별 초기화 함수는 `pages` 객체에 등록하며, Task 6–9에서 `/* ==== END PAGES ==== */` 주석 **바로 위**에 추가한다.
 
-- [ ] **Step 1: 실패하는 테스트 페이지 작성**
+- [x] **Step 1: 실패하는 테스트 페이지 작성**
 
 `tests/app.test.html`:
 ```html
@@ -1294,7 +1294,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 </script>
 ```
 
-- [ ] **Step 2: 실패 확인**
+- [x] **Step 2: 실패 확인**
 
 먼저 로컬 서버를 띄운다. Bash 도구의 `run_in_background: true`로 아래를 **한 번만** 실행한다(이미 떠 있으면 생략. 포트가 잡혀 있으면 `netstat -ano | grep 8080`으로 확인):
 ```bash
@@ -1308,7 +1308,7 @@ Expected: `app.js`가 없으므로 `RARO is not defined` 오류로 결과가 비
 
 `--dump-dom`이 아무것도 출력하지 않으면 대신 `--screenshot=docs/screenshots/test.png --window-size=900,1400` 으로 찍어 Read 도구로 확인한다.
 
-- [ ] **Step 3: app.js 공통 코드 작성**
+- [x] **Step 3: app.js 공통 코드 작성**
 
 `assets/app.js`:
 ```js
@@ -1552,7 +1552,7 @@ window.RARO = (function () {
 })();
 ```
 
-- [ ] **Step 4: 테스트 통과 확인**
+- [x] **Step 4: 테스트 통과 확인**
 
 Run:
 ```bash
@@ -1562,7 +1562,7 @@ Expected: `id="summary">OK 33 passed, 0 failed`
 
 FAIL이 있으면 `--dump-dom` 전체 출력에서 `FAIL` 줄을 읽고 `app.js`를 고친다. `searchProducts`는 공백으로 나눈 모든 단어가 상품명에 포함되어야 한다(AND).
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add assets/app.js tests/app.test.html && git commit -m "feat(js): RARO 공통 코드(데이터·카드·헤더·푸터)와 순수 함수 테스트
