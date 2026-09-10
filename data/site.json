@@ -184,6 +184,29 @@
    "priceBand": "30만원 이하",
    "detail": {
     "name": "클래시 1400 포세린 통 세라믹 4인 식탁 세트",
+    "cateCd": "012002",
+    "colors": [
+     {
+      "name": "흰색",
+      "hex": "#FFFFFF"
+     },
+     {
+      "name": "검정색",
+      "hex": "#191919"
+     },
+     {
+      "name": "갈색",
+      "hex": "#8E562E"
+     },
+     {
+      "name": "연한 회색",
+      "hex": "#C5C5C6"
+     },
+     {
+      "name": "회색",
+      "hex": "#8C8C8C"
+     }
+    ],
     "price": 178000,
     "listPrice": 300000,
     "shipping": "40,000원 / 상품수령시결제(착불)",
@@ -6354,6 +6377,17 @@
    "priceBand": "30만원 이하",
    "detail": {
     "name": "헤이즐 원형 1000 고무나무 원목 식탁 세트",
+    "cateCd": "013003",
+    "colors": [
+     {
+      "name": "고무나무",
+      "hex": "#F0D7BA"
+     },
+     {
+      "name": "월넛",
+      "hex": "#996526"
+     }
+    ],
     "price": 258000,
     "listPrice": 450000,
     "shipping": "23,000원 / 상품수령시결제(착불)",
@@ -6960,6 +6994,17 @@
    "priceBand": "50만원 이상",
    "detail": {
     "name": "코나 실리콘 비건 가죽 스윙 헤드레스트 틸팅 4인 소파 4인용 쇼파",
+    "cateCd": "003001",
+    "colors": [
+     {
+      "name": "아이보리",
+      "hex": "#F6F2E0"
+     },
+     {
+      "name": "연한 회색",
+      "hex": "#C5C5C6"
+     }
+    ],
     "price": 575000,
     "listPrice": 850000,
     "shipping": "60,000원 / 상품수령시결제(착불)",
@@ -7643,6 +7688,17 @@
    "priceBand": "50만원 이상",
    "detail": {
     "name": "모먼트 천연 면피 가죽 원터치 전동 리클라이너 4인 소파 4인용 쇼파",
+    "cateCd": "003001001",
+    "colors": [
+     {
+      "name": "머드",
+      "hex": "#BCAC97"
+     },
+     {
+      "name": "내추럴",
+      "hex": "#F7DEB5"
+     }
+    ],
     "price": 1828000,
     "listPrice": 2500000,
     "shipping": "60,000원 / 상품수령시결제(착불)",
@@ -8994,6 +9050,21 @@
    "priceBand": "30만원 이하",
    "detail": {
     "name": "아몬드 원목 식탁 의자 월넛 내추럴 투톤 고무나무 러버트리 체어",
+    "cateCd": "006",
+    "colors": [
+     {
+      "name": "고무나무",
+      "hex": "#F0D7BA"
+     },
+     {
+      "name": "월넛",
+      "hex": "#996526"
+     },
+     {
+      "name": "내추럴",
+      "hex": "#F7DEB5"
+     }
+    ],
     "price": 74900,
     "listPrice": 141000,
     "shipping": "무료",
@@ -9750,6 +9821,13 @@
    "priceBand": "30만원 이하",
    "detail": {
     "name": "허그 고무나무 원목 식탁 의자 카페 인테리어 체어",
+    "cateCd": "006003",
+    "colors": [
+     {
+      "name": "갈색",
+      "hex": "#8E562E"
+     }
+    ],
     "price": 86000,
     "listPrice": 120000,
     "shipping": "무료",
@@ -11220,6 +11298,13 @@
    "priceBand": "30–50만원",
    "detail": {
     "name": "데이지 타이보 갤럭시 원단 패브릭 2서랍 수납 침대 LK 매트리스 포함 세트",
+    "cateCd": "004001",
+    "colors": [
+     {
+      "name": "아이보리",
+      "hex": "#F6F2E0"
+     }
+    ],
     "price": 483000,
     "listPrice": 720000,
     "shipping": "60,000원 / 상품수령시결제(착불)",
@@ -12610,6 +12695,21 @@
    "priceBand": "30만원 이하",
    "detail": {
     "name": "몬타 원목 책상 내추럴 월넛 고무나무 1200 1500 1800 나무레일 수납 서랍",
+    "cateCd": "004002",
+    "colors": [
+     {
+      "name": "내추럴",
+      "hex": "#F7DEB5"
+     },
+     {
+      "name": "월넛",
+      "hex": "#996526"
+     },
+     {
+      "name": "고무나무",
+      "hex": "#F0D7BA"
+     }
+    ],
     "price": 127000,
     "listPrice": 250000,
     "shipping": "20,000원 / 상품수령시결제(착불)",
@@ -13968,6 +14068,1157 @@
    "material": "원목",
    "kind": null,
    "priceBand": "30–50만원"
+  },
+  {
+   "no": "1000000491",
+   "name": "허그 1400 포세린 통 세라믹 4인 식탁 세트",
+   "image": "https://furnius.hgodo.com/img/thumbnail/1000000491_1000_1.jpg",
+   "imageLarge": "https://furnius.hgodo.com/img/thumbnail/1000000491_1000_1.jpg",
+   "price": 398000,
+   "listPrice": 500000,
+   "reviewCount": 0,
+   "colors": [
+    {
+     "name": "흰색",
+     "hex": "#FFFFFF"
+    },
+    {
+     "name": "갈색",
+     "hex": "#8E562E"
+    }
+   ],
+   "tags": [],
+   "cate": "012002",
+   "top": "012",
+   "series": "허그",
+   "size": 1400,
+   "sizes": [
+    1400
+   ],
+   "seats": 4,
+   "shape": "사각",
+   "material": "무광 세라믹",
+   "kind": "세트",
+   "priceBand": "30–50만원",
+   "detail": {
+    "name": "허그 1400 포세린 통 세라믹 4인 식탁 세트",
+    "cateCd": "012002",
+    "colors": [
+     {
+      "name": "흰색",
+      "hex": "#FFFFFF"
+     },
+     {
+      "name": "갈색",
+      "hex": "#8E562E"
+     }
+    ],
+    "price": 398000,
+    "listPrice": 500000,
+    "shipping": "40,000원 / 상품수령시결제(착불)",
+    "gallery": [
+     "https://furnius.hgodo.com/img/thumbnail/1000000491_1000_1.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000491_1000_2.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000491_1000_3.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000491_1000_4.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000491_1000_5.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000491_1000_6.jpg"
+    ],
+    "options": [
+     {
+      "name": "식탁+의자2+벤치1",
+      "delta": null
+     },
+     {
+      "name": "식탁+의자4",
+      "delta": null
+     },
+     {
+      "name": "식탁 단품",
+      "delta": null
+     }
+    ],
+    "detailImages": [
+     "https://furnius.hgodo.com/table/ceramic/hug_ce4_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/hug_ce4_02.jpg",
+     "https://furnius.hgodo.com/table/ceramic/hug_ce4_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/hug_ce4_04.jpg",
+     "https://furnius.hgodo.com/table/ceramic/hug_ce4_op.jpg",
+     "https://furnius.hgodo.com/table/ceramic/hug_ce4_05.jpg",
+     "https://furnius.hgodo.com/table/ceramic/hug_ce4_size.jpg",
+     "https://furnius.hgodo.com/table/ceramic/hug_ce4_06.jpg",
+     "https://furnius.hgodo.com/table/ceramic/hug_ce4_07.jpg",
+     "https://furnius.hgodo.com/table/ceramic/hug_ce4_08.jpg",
+     "https://furnius.hgodo.com/table/ceramic/hug_ce4_09.jpg",
+     "https://furnius.hgodo.com/table/ceramic/hug_ce_chair_detail.jpg",
+     "https://furnius.hgodo.com/table/ceramic/hug_ce_bench2_detail.jpg"
+    ],
+    "spec": {
+     "KC 인증정보": "KC인증대상아님",
+     "제조/수입자": "라로퍼니처",
+     "AS 책임자와 전화번호": "[라로퍼니처 고객센터] 031 ) 977 - 7352",
+     "재공급(리퍼브) 가구의 경우 재공급 사유 및 하자 부위에 관한 정보": "해당사항 없음"
+    },
+    "reviewCount": 0,
+    "qnaCount": 0
+   },
+   "features": [
+    {
+     "title": "포세린 통 세라믹 상판",
+     "body": "열과 흠집, 얼룩에 강해 뜨거운 냄비를 바로 올려도 됩니다. 물기는 닦아내기만 하면 됩니다."
+    },
+    {
+     "title": "세트 구성 선택",
+     "body": "식탁 단품, 의자 4개, 의자 2개 + 벤치 구성 중 고를 수 있습니다. 구성별 가격은 옵션에서 확인하세요."
+    },
+    {
+     "title": "기사 방문 설치",
+     "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."
+    }
+   ]
+  },
+  {
+   "no": "1000000260",
+   "name": "보스턴 1900 포세린 통 세라믹 6인 참죽나무 원목 식탁 세트",
+   "image": "https://furnius.hgodo.com/img/thumbnail/1000000260_1000_1.jpg",
+   "imageLarge": "https://furnius.hgodo.com/img/thumbnail/1000000260_1000_1.jpg",
+   "price": 623000,
+   "listPrice": 800000,
+   "reviewCount": 4,
+   "colors": [
+    {
+     "name": "갈색",
+     "hex": "#8E562E"
+    },
+    {
+     "name": "흰색",
+     "hex": "#FFFFFF"
+    }
+   ],
+   "tags": [],
+   "cate": "012002",
+   "top": "012",
+   "series": "보스턴",
+   "size": 1900,
+   "sizes": [
+    1900
+   ],
+   "seats": 6,
+   "shape": "사각",
+   "material": "무광 세라믹",
+   "kind": "세트",
+   "priceBand": "50만원 이상",
+   "detail": {
+    "name": "보스턴 1900 포세린 통 세라믹 6인 참죽나무 원목 식탁 세트",
+    "cateCd": "012002",
+    "colors": [
+     {
+      "name": "갈색",
+      "hex": "#8E562E"
+     },
+     {
+      "name": "흰색",
+      "hex": "#FFFFFF"
+     }
+    ],
+    "price": 623000,
+    "listPrice": 800000,
+    "shipping": "60,000원 / 상품수령시결제(착불)",
+    "gallery": [
+     "https://furnius.hgodo.com/img/thumbnail/1000000260_1000_1.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000260_1000_2.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000260_1000_3.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000260_1000_4.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000260_1000_5.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000259_1000_4.jpg"
+    ],
+    "options": [
+     {
+      "name": "식탁+의자2+벤치1",
+      "delta": null
+     },
+     {
+      "name": "식탁+의자3+벤치1",
+      "delta": null
+     },
+     {
+      "name": "식탁+의자4",
+      "delta": null
+     },
+     {
+      "name": "식탁+의자6",
+      "delta": null
+     },
+     {
+      "name": "6인 식탁 단품",
+      "delta": null
+     }
+    ],
+    "detailImages": [
+     "https://furnius.hgodo.com/table/ceramic/boston_ceremic6_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/boston_ceremic6_02.jpg",
+     "https://furnius.hgodo.com/table/ceramic/boston_ceremic6_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/boston_ceremic6_04.jpg",
+     "https://furnius.hgodo.com/table/ceramic/boston_ceremic6_05.jpg",
+     "https://furnius.hgodo.com/table/ceramic/boston_ceremic6_06.jpg",
+     "https://furnius.hgodo.com/table/ceramic/boston_ceremic6_07.jpg",
+     "https://furnius.hgodo.com/table/ceramic/boston_ceremic6_08.jpg",
+     "https://furnius.hgodo.com/table/ceramic/boston_ceremic6_09.jpg",
+     "https://furnius.hgodo.com/table/ceramic/boston_ceremic6_10.jpg",
+     "https://furnius.hgodo.com/table/ceramic/boston_ceramic_chair_detail.jpg",
+     "https://furnius.hgodo.com/table/ceramic/boston_ceramic_3bench_detail.jpg"
+    ],
+    "spec": {
+     "KC 인증정보": "KC인증대상아님",
+     "제조/수입자": "라로퍼니처",
+     "AS 책임자와 전화번호": "[라로퍼니처 고객센터] 031 ) 977 - 7352",
+     "재공급(리퍼브) 가구의 경우 재공급 사유 및 하자 부위에 관한 정보": "해당사항 없음"
+    },
+    "reviewCount": 4,
+    "qnaCount": 1
+   },
+   "features": [
+    {
+     "title": "포세린 통 세라믹 상판",
+     "body": "열과 흠집, 얼룩에 강해 뜨거운 냄비를 바로 올려도 됩니다. 물기는 닦아내기만 하면 됩니다."
+    },
+    {
+     "title": "세트 구성 선택",
+     "body": "식탁 단품, 의자 4개, 의자 2개 + 벤치 구성 중 고를 수 있습니다. 구성별 가격은 옵션에서 확인하세요."
+    },
+    {
+     "title": "기사 방문 설치",
+     "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."
+    }
+   ]
+  },
+  {
+   "no": "1000000300",
+   "name": "에버 900 원형 유광 포세린 통 세라믹 식탁 세트",
+   "image": "https://furnius.hgodo.com/img/thumbnail/1000000300_1.jpg",
+   "imageLarge": "https://furnius.hgodo.com/img/thumbnail/1000000300_1.jpg",
+   "price": 123000,
+   "listPrice": 250000,
+   "reviewCount": 7,
+   "colors": [
+    {
+     "name": "흰색",
+     "hex": "#FFFFFF"
+    }
+   ],
+   "tags": [],
+   "cate": "012002",
+   "top": "012",
+   "series": "에버",
+   "size": 900,
+   "sizes": [
+    900
+   ],
+   "seats": null,
+   "shape": "원형",
+   "material": "유광 세라믹",
+   "kind": "세트",
+   "priceBand": "30만원 이하",
+   "detail": {
+    "name": "에버 900 원형 유광 포세린 통 세라믹 식탁 세트",
+    "cateCd": "012002",
+    "colors": [
+     {
+      "name": "흰색",
+      "hex": "#FFFFFF"
+     }
+    ],
+    "price": 123000,
+    "listPrice": 250000,
+    "shipping": "30,000원 / 상품수령시결제(착불)",
+    "gallery": [
+     "https://furnius.hgodo.com/img/thumbnail/1000000300_1.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000300_2.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000300_3.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000300_4.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000300_5.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000300_6.jpg"
+    ],
+    "options": [
+     {
+      "name": "식탁 단품",
+      "delta": null
+     },
+     {
+      "name": "식탁+의자2",
+      "delta": null
+     },
+     {
+      "name": "식탁+의자4",
+      "delta": null
+     }
+    ],
+    "detailImages": [
+     "https://furnius.hgodo.com/table/ceramic/ever_ce_circle_glossy_all_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ever_ce_circle_glossy_all_02.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ever_ce_circle_glossy_all_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ever_ce_circle_glossy_all_04.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ever_ce_circle_glossy_all_05.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ever_ce_circle_size_glossy.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ever_ce_circle_glossy_all_06.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ever_ce_circle_glossy_all_07.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ever_ce_circle_glossy_all_08.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ever_ce_circle_glossy_all_09.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ever_ce_circle_glossy_all_10.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ever_ce_white_radon.jpg"
+    ],
+    "spec": {
+     "KC 인증정보": "KC인증대상아님",
+     "제조/수입자": "라로퍼니처",
+     "AS 책임자와 전화번호": "[라로퍼니처 고객센터] 031 ) 977 - 7352",
+     "재공급(리퍼브) 가구의 경우 재공급 사유 및 하자 부위에 관한 정보": "해당사항 없음"
+    },
+    "reviewCount": 7,
+    "qnaCount": 1
+   },
+   "features": [
+    {
+     "title": "포세린 통 세라믹 상판",
+     "body": "열과 흠집, 얼룩에 강해 뜨거운 냄비를 바로 올려도 됩니다. 물기는 닦아내기만 하면 됩니다."
+    },
+    {
+     "title": "세트 구성 선택",
+     "body": "식탁 단품, 의자 4개, 의자 2개 + 벤치 구성 중 고를 수 있습니다. 구성별 가격은 옵션에서 확인하세요."
+    },
+    {
+     "title": "기사 방문 설치",
+     "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."
+    }
+   ]
+  },
+  {
+   "no": "1000000808",
+   "name": "디어 1700 고무나무 원목 6인 식탁 세트",
+   "image": "https://furnius.hgodo.com/img/thumbnail/1000000808_1000_01.jpg",
+   "imageLarge": "https://furnius.hgodo.com/img/thumbnail/1000000808_1000_01.jpg",
+   "price": 399000,
+   "listPrice": 500000,
+   "reviewCount": 1,
+   "colors": [
+    {
+     "name": "고무나무",
+     "hex": "#F0D7BA"
+    },
+    {
+     "name": "내추럴",
+     "hex": "#F7DEB5"
+    },
+    {
+     "name": "갈색",
+     "hex": "#8E562E"
+    }
+   ],
+   "tags": [],
+   "cate": "013003",
+   "top": "013",
+   "series": "디어",
+   "size": 1700,
+   "sizes": [
+    1700
+   ],
+   "seats": 6,
+   "shape": "사각",
+   "material": "원목",
+   "kind": "세트",
+   "priceBand": "30–50만원",
+   "detail": {
+    "name": "디어 1700 고무나무 원목 6인 식탁 세트",
+    "cateCd": "013003",
+    "colors": [
+     {
+      "name": "고무나무",
+      "hex": "#F0D7BA"
+     },
+     {
+      "name": "내추럴",
+      "hex": "#F7DEB5"
+     },
+     {
+      "name": "갈색",
+      "hex": "#8E562E"
+     }
+    ],
+    "price": 399000,
+    "listPrice": 500000,
+    "shipping": "47,000원 / 상품수령시결제(착불)",
+    "gallery": [
+     "https://furnius.hgodo.com/img/thumbnail/1000000808_1000_01.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000808_1000_02.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000808_1000_03.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000808_1000_04.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000808_1000_05.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000808_1000_06.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000808_1000_07.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000808_1000_08.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000808_1000_09.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000808_1000_10.jpg"
+    ],
+    "options": [],
+    "detailImages": [
+     "https://furnius.hgodo.com/table/wood/dear_wood6_all_bb_01.jpg",
+     "https://furnius.hgodo.com/table/wood/dear_wood6_all_bb_02.jpg",
+     "https://furnius.hgodo.com/table/wood/dear_wood6_op_bb.jpg",
+     "https://furnius.hgodo.com/table/wood/dear_wood6_all_bb_03.jpg",
+     "https://furnius.hgodo.com/table/wood/dear_wood6_all_bb_04.jpg",
+     "https://furnius.hgodo.com/table/wood/dear_wood6_all_bb_size.jpg",
+     "https://furnius.hgodo.com/table/wood/dear_wood6_all_bb_05.jpg",
+     "https://furnius.hgodo.com/table/wood/dear_wood6_all_bb_06.jpg",
+     "https://furnius.hgodo.com/table/wood/dear_wood6_all_bb_07.jpg",
+     "https://furnius.hgodo.com/table/wood/dear_wood_chair_detail.jpg",
+     "https://furnius.hgodo.com/table/wood/dear_wood_3bench_detail.jpg",
+     "https://furnius.hgodo.com/table/wood/ladena_3bench_n_detail.jpg"
+    ],
+    "spec": {
+     "KC 인증정보": "KC인증대상아님",
+     "제조/수입자": "라로퍼니처",
+     "AS 책임자와 전화번호": "[라로퍼니처 고객센터] 031 ) 977 - 7352",
+     "재공급(리퍼브) 가구의 경우 재공급 사유 및 하자 부위에 관한 정보": "해당사항 없음"
+    },
+    "reviewCount": 1,
+    "qnaCount": 0
+   },
+   "features": [
+    {
+     "title": "원목 상판",
+     "body": "고무나무·참죽나무 원목의 결과 색을 그대로 살렸습니다. 같은 이름의 의자·벤치와 톤이 맞습니다."
+    },
+    {
+     "title": "세트와 단품",
+     "body": "테이블 단품과 의자·벤치 세트 구성이 있습니다. 구성별 가격은 옵션에서 확인하세요."
+    },
+    {
+     "title": "기사 방문 설치",
+     "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."
+    }
+   ]
+  },
+  {
+   "no": "1000000295",
+   "name": "윈저 1250 1400 포세린 통 세라믹 4인 식탁 세트",
+   "image": "https://furnius.hgodo.com/img/thumbnail/1000000295_1.jpg",
+   "imageLarge": "https://furnius.hgodo.com/img/thumbnail/1000000295_1.jpg",
+   "price": 156000,
+   "listPrice": 250000,
+   "reviewCount": 5,
+   "colors": [
+    {
+     "name": "흰색",
+     "hex": "#FFFFFF"
+    },
+    {
+     "name": "연한 회색",
+     "hex": "#C5C5C6"
+    }
+   ],
+   "tags": [],
+   "cate": "012002",
+   "top": "012",
+   "series": "윈저",
+   "size": 1250,
+   "sizes": [
+    1250,
+    1400
+   ],
+   "seats": 4,
+   "shape": "사각",
+   "material": "무광 세라믹",
+   "kind": "세트",
+   "priceBand": "30만원 이하",
+   "detail": {
+    "name": "윈저 1250 1400 포세린 통 세라믹 4인 식탁 세트",
+    "cateCd": "012002",
+    "colors": [
+     {
+      "name": "흰색",
+      "hex": "#FFFFFF"
+     },
+     {
+      "name": "연한 회색",
+      "hex": "#C5C5C6"
+     }
+    ],
+    "price": 156000,
+    "listPrice": 250000,
+    "shipping": "40,000원 / 상품수령시결제(착불)",
+    "gallery": [
+     "https://furnius.hgodo.com/img/thumbnail/1000000295_1.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000295_2.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000295_3.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000295_4.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000295_5.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000295_6.jpg"
+    ],
+    "options": [
+     {
+      "name": "1250 화이트",
+      "delta": null
+     },
+     {
+      "name": "1250 그레이",
+      "delta": null
+     },
+     {
+      "name": "1400 화이트",
+      "delta": null
+     },
+     {
+      "name": "1400 그레이",
+      "delta": null
+     }
+    ],
+    "detailImages": [
+     "https://furnius.hgodo.com/table/ceramic/windsor_ce4_white_all_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/windsor_ce4_white_all_02.jpg",
+     "https://furnius.hgodo.com/table/ceramic/windsor_ce4_white_all_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/windsor_ce4_white_all_04.jpg",
+     "https://furnius.hgodo.com/table/ceramic/windsor_ce4_white_size.jpg",
+     "https://furnius.hgodo.com/table/ceramic/windsor_ce4_white_all_05.jpg",
+     "https://furnius.hgodo.com/table/ceramic/windsor_ce4_white_all_06.jpg",
+     "https://furnius.hgodo.com/table/ceramic/windsor_ce4_white_all_07.jpg",
+     "https://furnius.hgodo.com/table/ceramic/windsor_ce4_white_all_08.jpg",
+     "https://furnius.hgodo.com/table/ceramic/windsor_ce4_white_all_09.jpg",
+     "https://furnius.hgodo.com/table/ceramic/windsor_ce4_white_all_10.jpg",
+     "https://furnius.hgodo.com/table/ceramic/op_ceramic_drawer_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/op_ceramic_drawer_02.jpg"
+    ],
+    "spec": {
+     "KC 인증정보": "KC인증대상아님",
+     "제조/수입자": "라로퍼니처",
+     "AS 책임자와 전화번호": "[라로퍼니처 고객센터] 031 ) 977 - 7352",
+     "재공급(리퍼브) 가구의 경우 재공급 사유 및 하자 부위에 관한 정보": "해당사항 없음"
+    },
+    "reviewCount": 5,
+    "qnaCount": 0
+   },
+   "features": [
+    {
+     "title": "포세린 통 세라믹 상판",
+     "body": "열과 흠집, 얼룩에 강해 뜨거운 냄비를 바로 올려도 됩니다. 물기는 닦아내기만 하면 됩니다."
+    },
+    {
+     "title": "세트 구성 선택",
+     "body": "식탁 단품, 의자 4개, 의자 2개 + 벤치 구성 중 고를 수 있습니다. 구성별 가격은 옵션에서 확인하세요."
+    },
+    {
+     "title": "기사 방문 설치",
+     "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."
+    }
+   ]
+  },
+  {
+   "no": "1000000665",
+   "name": "밀러 1400 포세린 통 세라믹 낮은 패밀리 4인 식탁 세트",
+   "image": "https://furnius.hgodo.com/img/thumbnail/1000000665_1000_1.jpg",
+   "imageLarge": "https://furnius.hgodo.com/img/thumbnail/1000000665_1000_1.jpg",
+   "price": 341000,
+   "listPrice": 500000,
+   "reviewCount": 1,
+   "colors": [
+    {
+     "name": "흰색",
+     "hex": "#FFFFFF"
+    },
+    {
+     "name": "내추럴",
+     "hex": "#F7DEB5"
+    },
+    {
+     "name": "월넛",
+     "hex": "#996526"
+    }
+   ],
+   "tags": [],
+   "cate": "012002",
+   "top": "012",
+   "series": "밀러",
+   "size": 1400,
+   "sizes": [
+    1400
+   ],
+   "seats": 4,
+   "shape": "사각",
+   "material": "무광 세라믹",
+   "kind": "세트",
+   "priceBand": "30–50만원",
+   "detail": {
+    "name": "밀러 1400 포세린 통 세라믹 낮은 패밀리 4인 식탁 세트",
+    "cateCd": "012002",
+    "colors": [
+     {
+      "name": "흰색",
+      "hex": "#FFFFFF"
+     },
+     {
+      "name": "내추럴",
+      "hex": "#F7DEB5"
+     },
+     {
+      "name": "월넛",
+      "hex": "#996526"
+     }
+    ],
+    "price": 341000,
+    "listPrice": 500000,
+    "shipping": "40,000원 / 상품수령시결제(착불)",
+    "gallery": [
+     "https://furnius.hgodo.com/img/thumbnail/1000000665_1000_1.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000665_1000_2.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000665_1000_3.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000665_1000_4.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000665_1000_5.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000665_1000_6.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000665_1000_7.jpg"
+    ],
+    "options": [
+     {
+      "name": "화이트",
+      "delta": null
+     },
+     {
+      "name": "그레이",
+      "delta": null
+     }
+    ],
+    "detailImages": [
+     "https://furnius.hgodo.com/table/ceramic/miller_ce4_all_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_ce4_all_02.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_ce4_all_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_ce4_all_04.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_ce4_all_05.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_ce4_all_06.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_color_all.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_ce4_size_all.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_ce4_all_07.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_ce4_all_08.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_ce4_all_09.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_woodcolor.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_ce4_all_10.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_chair_detail.jpg",
+     "https://furnius.hgodo.com/table/ceramic/nuke_bench_detail.jpg",
+     "https://furnius.hgodo.com/table/ceramic/miller_bench_detail.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ce_radon.jpg",
+     "https://furnius.hgodo.com/banner/familytable_ce_banner.jpg"
+    ],
+    "spec": {
+     "KC 인증정보": "KC인증대상아님",
+     "제조/수입자": "라로퍼니처",
+     "AS 책임자와 전화번호": "[라로퍼니처 고객센터] 031 ) 977 - 7352",
+     "재공급(리퍼브) 가구의 경우 재공급 사유 및 하자 부위에 관한 정보": "해당사항 없음"
+    },
+    "reviewCount": 1,
+    "qnaCount": 0
+   },
+   "features": [
+    {
+     "title": "포세린 통 세라믹 상판",
+     "body": "열과 흠집, 얼룩에 강해 뜨거운 냄비를 바로 올려도 됩니다. 물기는 닦아내기만 하면 됩니다."
+    },
+    {
+     "title": "세트 구성 선택",
+     "body": "식탁 단품, 의자 4개, 의자 2개 + 벤치 구성 중 고를 수 있습니다. 구성별 가격은 옵션에서 확인하세요."
+    },
+    {
+     "title": "기사 방문 설치",
+     "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."
+    }
+   ]
+  },
+  {
+   "no": "1000000255",
+   "name": "레스트 1400 포세린 통 세라믹 낮은 패밀리 4인 식탁 세트",
+   "image": "https://furnius.hgodo.com/img/thumbnail/1000000255_1000.jpg",
+   "imageLarge": "https://furnius.hgodo.com/img/thumbnail/1000000255_1000.jpg",
+   "price": 403000,
+   "listPrice": 500000,
+   "reviewCount": 12,
+   "colors": [
+    {
+     "name": "갈색",
+     "hex": "#8E562E"
+    },
+    {
+     "name": "흰색",
+     "hex": "#FFFFFF"
+    }
+   ],
+   "tags": [],
+   "cate": "012002",
+   "top": "012",
+   "series": "레스트",
+   "size": 1400,
+   "sizes": [
+    1400
+   ],
+   "seats": 4,
+   "shape": "사각",
+   "material": "무광 세라믹",
+   "kind": "세트",
+   "priceBand": "30–50만원",
+   "detail": {
+    "name": "레스트 1400 포세린 통 세라믹 낮은 패밀리 4인 식탁 세트",
+    "cateCd": "012002",
+    "colors": [
+     {
+      "name": "갈색",
+      "hex": "#8E562E"
+     },
+     {
+      "name": "흰색",
+      "hex": "#FFFFFF"
+     }
+    ],
+    "price": 403000,
+    "listPrice": 500000,
+    "shipping": "40,000원 / 상품수령시결제(착불)",
+    "gallery": [
+     "https://furnius.hgodo.com/img/thumbnail/1000000255_1000.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000255_1000_1.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000255_1000_2.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000255_1000_3.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000255_1000_4.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000255_1000_5.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000255_1000_6.jpg"
+    ],
+    "options": [
+     {
+      "name": "화이트 상판",
+      "delta": null
+     },
+     {
+      "name": "그레이 상판",
+      "delta": null
+     }
+    ],
+    "detailImages": [
+     "https://furnius.hgodo.com/table/ceramic/rest_ce4_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/rest_ce4_02.jpg",
+     "https://furnius.hgodo.com/table/ceramic/rest_ce4_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/rest_ce4_04.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/rest_ce4_05.jpg",
+     "https://furnius.hgodo.com/table/ceramic/rest_ce4_06.jpg",
+     "https://furnius.hgodo.com/table/ceramic/rest_ce4_07.jpg",
+     "https://furnius.hgodo.com/table/ceramic/rest_ce4_08.jpg",
+     "https://furnius.hgodo.com/table/ceramic/rest_ce4_09.jpg",
+     "https://furnius.hgodo.com/table/ceramic/rest_ce4_10.jpg",
+     "https://furnius.hgodo.com/table/ceramic/rest_ce4_c2b1_chair.jpg",
+     "https://furnius.hgodo.com/table/ceramic/rest_ce4_c2b1_bench.jpg",
+     "https://furnius.hgodo.com/table/ceramic/radon_rest.jpg",
+     "https://furnius.hgodo.com/banner/familytable_ce_banner.jpg"
+    ],
+    "spec": {
+     "KC 인증정보": "KC인증대상아님",
+     "제조/수입자": "라로퍼니처",
+     "AS 책임자와 전화번호": "[라로퍼니처 고객센터] 031 ) 977 - 7352",
+     "재공급(리퍼브) 가구의 경우 재공급 사유 및 하자 부위에 관한 정보": "해당사항 없음"
+    },
+    "reviewCount": 12,
+    "qnaCount": 0
+   },
+   "features": [
+    {
+     "title": "포세린 통 세라믹 상판",
+     "body": "열과 흠집, 얼룩에 강해 뜨거운 냄비를 바로 올려도 됩니다. 물기는 닦아내기만 하면 됩니다."
+    },
+    {
+     "title": "세트 구성 선택",
+     "body": "식탁 단품, 의자 4개, 의자 2개 + 벤치 구성 중 고를 수 있습니다. 구성별 가격은 옵션에서 확인하세요."
+    },
+    {
+     "title": "기사 방문 설치",
+     "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."
+    }
+   ]
+  },
+  {
+   "no": "1000000320",
+   "name": "루아 1200 유광 포세린 통 세라믹 4인 고무나무 원목 식탁 세트",
+   "image": "https://furnius.hgodo.com/img/thumbnail/1000000320_1000_1.jpg",
+   "imageLarge": "https://furnius.hgodo.com/img/thumbnail/1000000320_1000_1.jpg",
+   "price": 281000,
+   "listPrice": 400000,
+   "reviewCount": 20,
+   "colors": [
+    {
+     "name": "흰색",
+     "hex": "#FFFFFF"
+    },
+    {
+     "name": "내추럴",
+     "hex": "#F7DEB5"
+    }
+   ],
+   "tags": [],
+   "cate": "012002",
+   "top": "012",
+   "series": "루아",
+   "size": 1200,
+   "sizes": [
+    1200
+   ],
+   "seats": 4,
+   "shape": "사각",
+   "material": "유광 세라믹",
+   "kind": "세트",
+   "priceBand": "30만원 이하",
+   "detail": {
+    "name": "루아 1200 유광 포세린 통 세라믹 4인 고무나무 원목 식탁 세트",
+    "cateCd": "012002",
+    "colors": [
+     {
+      "name": "흰색",
+      "hex": "#FFFFFF"
+     },
+     {
+      "name": "내추럴",
+      "hex": "#F7DEB5"
+     }
+    ],
+    "price": 281000,
+    "listPrice": 400000,
+    "shipping": "40,000원 / 상품수령시결제(착불)",
+    "gallery": [
+     "https://furnius.hgodo.com/img/thumbnail/1000000320_1000_1.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000320_1000_2.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000320_1000_3.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000320_1000_4.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000320_1000_5.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000320_1000_6.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000320_1000_7.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000320_1000_8.jpg"
+    ],
+    "options": [],
+    "detailImages": [
+     "https://furnius.hgodo.com/table/ceramic/lua_ce4_all_bb_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua_ce4_all_bb_02.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua_ce4_all_bb_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua_ce4_all_bb_04.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua_ce4_all_bb_05.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua_ce4_all_bb_06.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua_ce4_all_size_bb.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua_ce4_all_bb_07.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua_ce4_all_bb_08.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua_ce4_all_bb_09.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua_ce4_all_bb_10.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua_chair_detail.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua_bench_detail.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ladena_2bench_n_detail.jpg",
+     "https://furnius.hgodo.com/table/ceramic/radon_lua.jpg"
+    ],
+    "spec": {
+     "KC 인증정보": "KC인증대상아님",
+     "제조/수입자": "라로퍼니처",
+     "AS 책임자와 전화번호": "[라로퍼니처 고객센터] 031 ) 977 - 7352",
+     "재공급(리퍼브) 가구의 경우 재공급 사유 및 하자 부위에 관한 정보": "해당사항 없음"
+    },
+    "reviewCount": 20,
+    "qnaCount": 12
+   },
+   "features": [
+    {
+     "title": "포세린 통 세라믹 상판",
+     "body": "열과 흠집, 얼룩에 강해 뜨거운 냄비를 바로 올려도 됩니다. 물기는 닦아내기만 하면 됩니다."
+    },
+    {
+     "title": "세트 구성 선택",
+     "body": "식탁 단품, 의자 4개, 의자 2개 + 벤치 구성 중 고를 수 있습니다. 구성별 가격은 옵션에서 확인하세요."
+    },
+    {
+     "title": "기사 방문 설치",
+     "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."
+    }
+   ]
+  },
+  {
+   "no": "1000000210",
+   "name": "아델 1800 유광 포세린 통 세라믹 6인 식탁 세트",
+   "image": "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_05.jpg",
+   "imageLarge": "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_05.jpg",
+   "price": 407000,
+   "listPrice": 500000,
+   "reviewCount": 12,
+   "colors": [
+    {
+     "name": "흰색",
+     "hex": "#FFFFFF"
+    },
+    {
+     "name": "회색",
+     "hex": "#8C8C8C"
+    },
+    {
+     "name": "네이비",
+     "hex": "#1E2C89"
+    },
+    {
+     "name": "금색",
+     "hex": "#D5B450"
+    }
+   ],
+   "tags": [],
+   "cate": "012002",
+   "top": "012",
+   "series": "아델",
+   "size": 1800,
+   "sizes": [
+    1800
+   ],
+   "seats": 6,
+   "shape": "사각",
+   "material": "유광 세라믹",
+   "kind": "세트",
+   "priceBand": "30–50만원",
+   "detail": {
+    "name": "아델 1800 유광 포세린 통 세라믹 6인 식탁 세트",
+    "cateCd": "012002",
+    "colors": [
+     {
+      "name": "흰색",
+      "hex": "#FFFFFF"
+     },
+     {
+      "name": "회색",
+      "hex": "#8C8C8C"
+     },
+     {
+      "name": "네이비",
+      "hex": "#1E2C89"
+     },
+     {
+      "name": "금색",
+      "hex": "#D5B450"
+     }
+    ],
+    "price": 407000,
+    "listPrice": 500000,
+    "shipping": "60,000원 / 상품수령시결제(착불)",
+    "gallery": [
+     "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_05.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_02.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_03.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_04.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_01.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_06.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_07.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_08.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_09.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_10.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_11.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000000210_1000_12.jpg"
+    ],
+    "options": [
+     {
+      "name": "식탁+의자2+벤치1",
+      "delta": null
+     },
+     {
+      "name": "식탁+의자3+벤치1",
+      "delta": null
+     },
+     {
+      "name": "식탁+의자4",
+      "delta": null
+     },
+     {
+      "name": "식탁+의자6",
+      "delta": null
+     },
+     {
+      "name": "6인 식탁 단품(식탁 1개)",
+      "delta": null
+     }
+    ],
+    "detailImages": [
+     "https://furnius.hgodo.com/table/ceramic/adel_ce6_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/adel_ce6_02.jpg",
+     "https://furnius.hgodo.com/table/ceramic/adel_ce6_04.jpg",
+     "https://furnius.hgodo.com/table/ceramic/adel_ce6_05.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/adel_ce6_06.jpg",
+     "https://furnius.hgodo.com/table/ceramic/adel_ce6_07.jpg",
+     "https://furnius.hgodo.com/table/ceramic/adel_ce6_08.jpg",
+     "https://furnius.hgodo.com/table/ceramic/adel_ce6_09.jpg",
+     "https://furnius.hgodo.com/table/ceramic/adel_ce6_10.jpg",
+     "https://furnius.hgodo.com/table/ceramic/adel_ce6_11.jpg",
+     "https://furnius.hgodo.com/table/gold_series.jpg"
+    ],
+    "spec": {
+     "KC 인증정보": "KC인증대상아님",
+     "제조/수입자": "라로퍼니처",
+     "AS 책임자와 전화번호": "[라로퍼니처 고객센터] 031 ) 977 - 7352",
+     "재공급(리퍼브) 가구의 경우 재공급 사유 및 하자 부위에 관한 정보": "해당사항 없음"
+    },
+    "reviewCount": 12,
+    "qnaCount": 1
+   },
+   "features": [
+    {
+     "title": "포세린 통 세라믹 상판",
+     "body": "열과 흠집, 얼룩에 강해 뜨거운 냄비를 바로 올려도 됩니다. 물기는 닦아내기만 하면 됩니다."
+    },
+    {
+     "title": "세트 구성 선택",
+     "body": "식탁 단품, 의자 4개, 의자 2개 + 벤치 구성 중 고를 수 있습니다. 구성별 가격은 옵션에서 확인하세요."
+    },
+    {
+     "title": "기사 방문 설치",
+     "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."
+    }
+   ]
+  },
+  {
+   "no": "1000001394",
+   "name": "루아 1600 포세린 통 세라믹 4인 6인 식탁 세트",
+   "image": "https://furnius.hgodo.com/img/thumbnail/1000001394_1000_01.jpg",
+   "imageLarge": "https://furnius.hgodo.com/img/thumbnail/1000001394_1000_01.jpg",
+   "price": 317000,
+   "listPrice": 470000,
+   "reviewCount": 0,
+   "colors": [
+    {
+     "name": "머드",
+     "hex": "#BCAC97"
+    },
+    {
+     "name": "회색",
+     "hex": "#8C8C8C"
+    },
+    {
+     "name": "흰색",
+     "hex": "#FFFFFF"
+    },
+    {
+     "name": "내추럴",
+     "hex": "#F7DEB5"
+    },
+    {
+     "name": "고무나무",
+     "hex": "#F0D7BA"
+    }
+   ],
+   "tags": [],
+   "cate": "012002",
+   "top": "012",
+   "series": "루아",
+   "size": 1600,
+   "sizes": [
+    1600
+   ],
+   "seats": 4,
+   "shape": "사각",
+   "material": "무광 세라믹",
+   "kind": "세트",
+   "priceBand": "30–50만원",
+   "detail": {
+    "name": "루아 1600 포세린 통 세라믹 4인 6인 식탁 세트",
+    "cateCd": "012002",
+    "colors": [
+     {
+      "name": "머드",
+      "hex": "#BCAC97"
+     },
+     {
+      "name": "회색",
+      "hex": "#8C8C8C"
+     },
+     {
+      "name": "흰색",
+      "hex": "#FFFFFF"
+     },
+     {
+      "name": "내추럴",
+      "hex": "#F7DEB5"
+     },
+     {
+      "name": "고무나무",
+      "hex": "#F0D7BA"
+     }
+    ],
+    "price": 317000,
+    "listPrice": 470000,
+    "shipping": "40,000원 / 상품수령시결제(착불)",
+    "gallery": [
+     "https://furnius.hgodo.com/img/thumbnail/1000001394_1000_01.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000001394_1000_02.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000001394_1000_03.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000001394_1000_04.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000001394_1000_05.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000001394_1000_06.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000001394_1000_07.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000001394_1000_08.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000001394_1000_09.jpg",
+     "https://furnius.hgodo.com/img/thumbnail/1000001394_1000_10.jpg"
+    ],
+    "options": [
+     {
+      "name": "화이트",
+      "delta": null
+     },
+     {
+      "name": "그레이",
+      "delta": null
+     }
+    ],
+    "detailImages": [
+     "https://furnius.hgodo.com/table/ceramic/lua1600_ce6_all_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua1600_ce6_all_02.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua1600_ce6_all_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_01.jpg",
+     "https://furnius.hgodo.com/table/ceramic/ceramic_video_03.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua1600_ce6_all_04.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua1600_ce6_size_all.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua1600_ce6_all_op.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua1600_ce6_all_05.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua1600_ce6_all_06.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua1600_ce6_all_07.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua1600_ce6_all_08.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua1600_ce6_all_09.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua1600_chair_detail2.jpg",
+     "https://furnius.hgodo.com/table/ceramic/lua1600_3bench_detail.jpg",
+     "https://furnius.hgodo.com/table/ceramic/radon_lua.jpg"
+    ],
+    "spec": {
+     "KC 인증정보": "KC인증대상아님",
+     "제조/수입자": "라로퍼니처",
+     "AS 책임자와 전화번호": "[라로퍼니처 고객센터] 031 ) 977 - 7352",
+     "재공급(리퍼브) 가구의 경우 재공급 사유 및 하자 부위에 관한 정보": "해당사항 없음"
+    },
+    "reviewCount": 0,
+    "qnaCount": 0
+   },
+   "features": [
+    {
+     "title": "포세린 통 세라믹 상판",
+     "body": "열과 흠집, 얼룩에 강해 뜨거운 냄비를 바로 올려도 됩니다. 물기는 닦아내기만 하면 됩니다."
+    },
+    {
+     "title": "세트 구성 선택",
+     "body": "식탁 단품, 의자 4개, 의자 2개 + 벤치 구성 중 고를 수 있습니다. 구성별 가격은 옵션에서 확인하세요."
+    },
+    {
+     "title": "기사 방문 설치",
+     "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."
+    }
+   ]
   }
  ],
  "home": {
@@ -13994,17 +15245,26 @@
    "1000000490",
    "1000000004",
    "1000000238",
-   "1000000252"
+   "1000000295",
+   "1000000252",
+   "1000000665",
+   "1000000491",
+   "1000000260"
   ],
   "best": [
    "1000000487",
+   "1000000300",
+   "1000000255",
    "1000000107",
+   "1000000320",
+   "1000000210",
    "1000000113",
    "1000000104"
   ],
   "new": [
    "1000001396",
    "1000001395",
+   "1000001394",
    "1000001393",
    "1000001392",
    "1000001391",
@@ -14012,6 +15272,11 @@
    "1000001388"
   ],
   "lookbook": [
+   {
+    "img": "https://furnius.hgodo.com/img/thumbnail/1000000491_1000_2.jpg",
+    "goodsNo": "1000000491",
+    "caption": "허그 1400 포세린 통 세라믹 4인 식탁 세트"
+   },
    {
     "img": "https://furnius.hgodo.com/img/thumbnail/1000000765_1000_2.jpg",
     "goodsNo": "1000000765",
@@ -14043,6 +15308,15 @@
     "goodsName": "[무료배송] 1+1 비너스 가죽 화이트 스틸 식탁 의자 편한 카페 인테리어 체어"
    },
    {
+    "img": "https://phinf.pstatic.net/checkout.phinf/20260728_43/17852369226492XYEi_JPEG/image.jpg?type=w640",
+    "text": "너무 크지 않고 적당해요",
+    "stars": 4,
+    "name": "네이버페이 구매자",
+    "date": "2026.07.28",
+    "goodsNo": "1000000808",
+    "goodsName": "디어 1700 고무나무 원목 6인 식탁 세트"
+   },
+   {
     "img": "https://furnius.hgodo.com/img/thumbnail/1000000489_300.jpg",
     "text": "좋은 제품입니다 잘 쓸게요",
     "stars": 3,
@@ -14068,15 +15342,6 @@
     "date": "2026.06.23",
     "goodsNo": "1000000233",
     "goodsName": "어반 고무나무 원목 컴퓨터 책상 1200 1500 학생 서재 데스크"
-   },
-   {
-    "img": "https://phinf.pstatic.net/checkout.phinf/20260610_268/1781078171011GgrIV_JPEG/1781078151362.jpg?type=w640",
-    "text": "조립 어렵지않게 잘 했습니다.",
-    "stars": 5,
-    "name": "네이버페이 구매자",
-    "date": "2026.06.10",
-    "goodsNo": "1000000875",
-    "goodsName": "[무료배송] 1+1 비너스 가죽 화이트 스틸 식탁 의자 편한 카페 인테리어 체어"
    }
   ]
  },

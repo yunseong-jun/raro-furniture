@@ -5,7 +5,8 @@
     PYTHONIOENCODING=utf-8 python data/build.py            # 캐시 없는 페이지만 요청 후 생성
     PYTHONIOENCODING=utf-8 python data/build.py --offline  # data/raw/ 캐시만 사용 (네트워크 없음)
 
-요청은 브라우저 UA로 1초 간격, 총 32건 안팎. 결과 HTML은 data/raw/에 캐시한다.
+요청은 브라우저 UA로 1초 간격, 총 40건 안팎(목록 19 + 목록 밖 대표 상품 상세 ~10 + DETAIL_GOODS 상세 + 홈 1).
+결과 HTML은 data/raw/에 캐시한다.
 """
 import html as html_lib
 import json
@@ -42,6 +43,18 @@ def to_int(s):
     return int(float(m.group(0).replace(",", "")))
 
 
+# ---------------------------------------------------------------- 색상 스와치 (목록·상세 공용)
+def parse_colors(fragment: str) -> list:
+    """<div class='color'>...스와치...</div> 조각에서 색상 목록을 뽑는다."""
+    colors = []
+    cbox = re.search(r"<div class='color'[^>]*>(.*?)</div>\s*</div>", fragment, re.S)
+    if cbox:
+        for hexv, title in re.findall(
+                r"background-color:(#[0-9A-Fa-f]{6});[^']*'\s*title='([^'\[]+)", cbox.group(1)):
+            colors.append({"name": title.strip(), "hex": hexv.upper()})
+    return colors
+
+
 # ---------------------------------------------------------------- 목록 파서
 def parse_list(page: str, stats: dict = None) -> list:
     """goods_list.php 페이지에서 상품 목록을 뽑는다.
@@ -65,12 +78,7 @@ def parse_list(page: str, stats: dict = None) -> list:
         custom = to_int(dc.group(1)) if dc else None
         list_price = custom if (custom and price and custom > price) else None
         rc = re.search(r"REVIEW\s*:\s*(\d+)", block)
-        colors = []
-        cbox = re.search(r"<div class='color'[^>]*>(.*?)</div>\s*</div>", block, re.S)
-        if cbox:
-            for hexv, title in re.findall(
-                    r"background-color:(#[0-9A-Fa-f]{6});[^']*'\s*title='([^'\[]+)", cbox.group(1)):
-                colors.append({"name": title.strip(), "hex": hexv.upper()})
+        colors = parse_colors(block)
         tags = ["무료배송"] if "free_delivery" in block else []
         items.append({
             "no": no.group(1),
@@ -93,6 +101,14 @@ _SKIP_SPEC = {"상세페이지 참조", "상품상세참조", "상세페이지�
 def parse_detail(page: str) -> dict:
     """goods_view.php 페이지에서 상세 정보를 뽑는다."""
     name = re.search(r'<div class="item_detail_tit">\s*<h3>(.*?)</h3>', page, re.S)
+    cate_cd = re.search(r'name="cateCd" value="(\d+)"', page)
+    tit_start = page.find("item_detail_tit")
+    if tit_start == -1:
+        tit_head = ""
+    else:
+        tit_end = page.find("btn_qa_share_box", tit_start)
+        tit_head = page[tit_start:tit_end] if tit_end != -1 else page[tit_start:]
+    colors = parse_colors(tit_head)
     price = re.search(r'name="set_goods_price" value="([\d.]+)"', page)
     fixed = re.search(r'name="set_goods_fixedPrice" value="([\d.]+)"', page)
     ship = re.search(r'<dl class="item_delivery">.*?<dd>(.*?)(?:<span class="btn_layer"|</dd>)', page, re.S)
@@ -122,6 +138,8 @@ def parse_detail(page: str) -> dict:
     fixed_v = to_int(fixed.group(1)) if fixed else None
     return {
         "name": clean(name.group(1)) if name else "",
+        "cateCd": cate_cd.group(1) if cate_cd else "",
+        "colors": colors,
         "price": price_v,
         "listPrice": fixed_v if (fixed_v and price_v and fixed_v > price_v) else None,
         "shipping": clean(ship.group(1)) if ship else "",
@@ -333,6 +351,36 @@ def attach_detail(p: dict, detail: dict) -> None:
     p["features"] = FEATURES[p["top"]]
 
 
+def top_of(cate: str):
+    """cateCd(소분류)가 속한 대분류 코드. CATEGORIES 자식 목록에 없으면 앞 3자리로 대체,
+    cate 자체가 없으면 None."""
+    if not cate:
+        return None
+    for top in CATEGORIES:
+        if any(child["code"] == cate for child in top["children"]):
+            return top["code"]
+    return cate[:3]
+
+
+def product_from_detail(no: str, d: dict) -> dict:
+    """목록 어디에도 없는 대표 상품을 상세 페이지 정보만으로 조립한다."""
+    image = d["gallery"][0] if d.get("gallery") else ""
+    item = {
+        "no": no,
+        "name": d["name"],
+        "image": image,
+        "imageLarge": image,
+        "price": d["price"],
+        "listPrice": d["listPrice"],
+        "reviewCount": d["reviewCount"],
+        "colors": d["colors"],
+        "tags": [],
+    }
+    p = assemble_product(item, cate=d["cateCd"], top=top_of(d["cateCd"]))
+    attach_detail(p, d)
+    return p
+
+
 # ---------------------------------------------------------------- 수집
 def fetch(path: str, cache_name: str, offline: bool) -> str:
     cache = RAW / f"{cache_name}.html"
@@ -369,10 +417,25 @@ def build(offline: bool = False) -> dict:
                     continue
                 products[item["no"]] = assemble_product(item, child["code"], top["code"])
                 order.append(item["no"])
+    extra, seen_extra = [], set()
+    for no in DETAIL_GOODS + HOME["weekly"] + HOME["best"] + HOME["new"] + HOME["lookbook"]:
+        if no not in products and no not in seen_extra:
+            extra.append(no)
+            seen_extra.add(no)
+    print(f"[1b/3] 목록 밖 대표 상품 {len(extra)}개 상세로 등록")
+    for no in extra:
+        d = parse_detail(fetch(f"/goods/goods_view.php?goodsNo={no}", f"view-{no}", offline))
+        if d.get("name") and d.get("price"):
+            products[no] = product_from_detail(no, d)
+            order.append(no)
+        else:
+            print(f"  경고: {no} 상세 페이지에서 상품을 읽지 못함")
     print("[2/3] 대표 상품 상세")
     for no in DETAIL_GOODS:
         if no not in products:
             print(f"  경고: {no} 는 목록에 없어 상세를 건너뜁니다")
+            continue
+        if "detail" in products[no]:
             continue
         attach_detail(products[no], parse_detail(fetch(f"/goods/goods_view.php?goodsNo={no}", f"view-{no}", offline)))
     print("[3/3] 메인 페이지 후기")

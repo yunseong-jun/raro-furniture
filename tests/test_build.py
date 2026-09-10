@@ -35,7 +35,11 @@ LIST_HTML = """
 DETAIL_HTML = """
 <input type="hidden" name="set_goods_price" value="398000" />
 <input type="hidden" id="set_goods_fixedPrice" name="set_goods_fixedPrice" value="500000.00" />
-<div class="item_detail_tit"> <h3>허그 1400 포세린 통 세라믹 4인 식탁 세트</h3> </div>
+<input type="hidden" name="cateCd" value="012002" />
+<div class="item_detail_tit"> <h3>허그 1400 포세린 통 세라믹 4인 식탁 세트</h3>
+<div class='color'><div style='background-color:#FFFFFF;' title='흰색[White]'></div><div style='background-color:#8E562E; border-color:#8E562E;' title='갈색[Brown]'></div></div>
+<div class="btn_layer btn_qa_share_box"></div>
+</div>
 <dl class="item_price"><dt>판매가</dt><dd><strong><strong>398,000</strong></strong>원</dd></dl>
 <dl class="item_delivery"><dt>배송비</dt><dd><strong>40,000원</strong> / 상품수령시결제(착불) <span class="btn_layer"><a href="#lyDelivery">조건별배송</a></span><div id="lyDelivery">긴 표 내용 긴 표 내용 긴 표 내용</div></dd></dl>
 <script>detailKeyID[0] = "<img  src=\\"https://furnius.hgodo.com/img/thumbnail/1000000491_1000_1.jpg\\" width=\\"600\\" />"; detailKeyID[1] = "<img  src=\\"https://furnius.hgodo.com/img/thumbnail/1000000491_1000_2.jpg\\" />";</script>
@@ -123,6 +127,8 @@ class ParseDetailTest(unittest.TestCase):
     def test_fields(self):
         d = build.parse_detail(DETAIL_HTML)
         self.assertEqual(d["name"], "허그 1400 포세린 통 세라믹 4인 식탁 세트")
+        self.assertEqual(d["cateCd"], "012002")
+        self.assertEqual(d["colors"], [{"name": "흰색", "hex": "#FFFFFF"}, {"name": "갈색", "hex": "#8E562E"}])
         self.assertEqual(d["price"], 398000)
         self.assertEqual(d["listPrice"], 500000)
         self.assertEqual(d["shipping"], "40,000원 / 상품수령시결제(착불)")
@@ -144,6 +150,8 @@ class ParseDetailTest(unittest.TestCase):
         self.assertEqual(d["options"], [])
         self.assertEqual(d["spec"], {})
         self.assertIsNone(d["price"])
+        self.assertEqual(d["cateCd"], "")
+        self.assertEqual(d["colors"], [])
 
 
 class ParseReviewsTest(unittest.TestCase):
@@ -229,6 +237,33 @@ class AssembleTest(unittest.TestCase):
             self.assertTrue(top["guide"]["title"] and top["guide"]["body"])
             self.assertTrue(top["children"])
             self.assertIn(top["code"], build.FEATURES)
+
+
+class TopOfTest(unittest.TestCase):
+    def test_known_child_resolves_to_its_top(self):
+        self.assertEqual(build.top_of("012002"), "012")
+        self.assertEqual(build.top_of("013003"), "013")
+
+    def test_unknown_child_falls_back_to_prefix(self):
+        self.assertEqual(build.top_of("006999"), "006")
+
+    def test_empty_is_none(self):
+        self.assertIsNone(build.top_of(""))
+
+
+class ProductFromDetailTest(unittest.TestCase):
+    def test_builds_list_shaped_item_from_detail(self):
+        d = {"name": "허그 1400 포세린 통 세라믹 4인 식탁 세트", "cateCd": "012002",
+             "price": 398000, "listPrice": 500000, "shipping": "40,000원",
+             "gallery": ["g1.jpg", "g2.jpg"], "options": [], "detailImages": [], "spec": {},
+             "colors": [{"name": "흰색", "hex": "#FFFFFF"}], "reviewCount": 12, "qnaCount": 3}
+        p = build.product_from_detail("1000000491", d)
+        self.assertEqual(p["cate"], "012002")
+        self.assertEqual(p["top"], "012")
+        self.assertEqual(p["image"], "g1.jpg")
+        self.assertEqual(p["series"], "허그")
+        self.assertEqual(len(p["features"]), 3)
+        self.assertIs(p["detail"], d)
 
 
 if __name__ == "__main__":
