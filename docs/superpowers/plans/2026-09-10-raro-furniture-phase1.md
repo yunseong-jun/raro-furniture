@@ -1919,7 +1919,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Create: `view.html`
 - Modify: `assets/app.js` (`/* ==== END PAGES ==== */` 바로 위에 `pages.view` 추가)
 
-- [ ] **Step 1: view.html 작성**
+- [x] **Step 1: view.html 작성**
 
 `view.html`:
 ```html
@@ -1999,7 +1999,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 </html>
 ```
 
-- [ ] **Step 2: pages.view 추가**
+- [x] **Step 2: pages.view 추가**
 
 `assets/app.js`의 `/* ==== END PAGES ==== */` 바로 위에 추가:
 ```js
@@ -2119,7 +2119,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
   };
 ```
 
-- [ ] **Step 3: 브라우저 확인**
+- [x] **Step 3: 브라우저 확인**
 
 Run:
 ```bash
@@ -2129,7 +2129,7 @@ E="/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"; C="--headless=
 ```
 Read 도구로 확인. Expected(491): 갤러리 + 썸네일, 라벨 "세라믹 식탁 세트 · 허그", 가격 `20% 398,000원 500,000원`, 구성 3개 카드(첫 번째 선택), 색상 스와치 2개, 수량, 총액, 버튼 3개, 탭 바, 특징 3개, 상세 이미지(접힘), 사양 표(값 있는 항목만), 리뷰 개수, 허그 시리즈 4개, 비슷한 가격대 4개. Expected(003, 상세 없음): 옵션 블록 없음, "상세 이미지는 실제 사이트…" 안내, 나머지 정상.
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git add view.html assets/app.js docs/screenshots/view-desktop.png docs/screenshots/view-nodetail.png && git commit -m "feat(view): 상품 상세 — 갤러리, 스티키 구매 패널, 구성 옵션, 탭, 사양, 함께 보기
