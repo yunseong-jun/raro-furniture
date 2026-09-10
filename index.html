@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>라로퍼니처 — 친환경 가구 브랜드</title>
+<meta name="description" content="포세린 세라믹 식탁, 고무나무 원목 식탁, 전동 리클라이너 소파. 30년 제조 기술력의 원목 전문 브랜드 라로퍼니처.">
+<link rel="icon" href="assets/logo-header.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-page="home">
+<a class="skip" href="#main">본문 바로가기</a>
+<header class="hdr" id="site-header"></header>
+<main id="main">
+  <section class="hero" id="hero" aria-label="추천 상품" data-needs-data></section>
+
+  <section class="sec container" id="rooms">
+    <div class="sec__head"><div><h2 class="h2">공간별로 둘러보기</h2><p class="sub">식탁부터 침실까지, 찾는 가구가 있는 곳으로 바로 갑니다.</p></div></div>
+    <div class="grid grid--5" data-rooms></div>
+  </section>
+
+  <section class="sec container" id="weekly">
+    <div class="sec__head">
+      <div><h2 class="h2">이번 주 특가<span class="weekly__note">7일 단독 최저가</span></h2>
+        <p class="sub">매주 월요일에 바뀝니다 · 이번 주 남은 기간 <b data-weekly-left></b></p></div>
+      <a class="more" href="list.html?cate=all&amp;sale=1">전체 보기</a>
+    </div>
+    <div class="scroll-row" data-weekly data-needs-data></div>
+  </section>
+
+  <section class="sec container" id="best">
+    <div class="sec__head">
+      <div><h2 class="h2">이번 달 베스트.</h2><p class="sub">고객들이 가장 많이 선택한 가구</p></div>
+      <a class="more" href="list.html?cate=all&amp;sort=popular">전체 보기</a>
+    </div>
+    <div class="grid grid--4" data-best data-needs-data></div>
+  </section>
+
+  <section class="band" id="brand-band">
+    <div class="container band__grid">
+      <div>
+        <span class="label">Brand Story</span>
+        <h2 class="h2 mt-8" data-slogan>현대적 감각으로 자연을 다듬다.</h2>
+        <p class="sub" data-story></p>
+        <div class="band__actions">
+          <a class="btn btn--primary" href="brand.html">브랜드 스토리</a>
+          <a class="btn btn--secondary" href="brand.html#showroom">일산 쇼룸 안내</a>
+        </div>
+      </div>
+      <div class="band__img"><img src="assets/company-story.jpg" alt="원목을 다듬는 장인의 손"></div>
+    </div>
+  </section>
+
+  <section class="sec container" id="new">
+    <div class="sec__head">
+      <div><h2 class="h2">새로 나온 가구</h2><p class="sub">이달의 신제품, 카테고리별로 골라 보세요.</p></div>
+      <a class="more" href="list.html?cate=all&amp;sort=new">전체 보기</a>
+    </div>
+    <div class="chips tabs" data-new-tabs></div>
+    <div class="grid grid--4" data-new data-needs-data></div>
+  </section>
+
+  <section class="sec container" id="space">
+    <div class="sec__head"><div><h2 class="h2">고객의 공간에서.</h2><p class="sub">실제 후기 사진과 라로퍼니처가 제안하는 스타일링</p></div></div>
+    <div class="space" data-space data-needs-data></div>
+  </section>
+</main>
+<footer class="ftr" id="site-footer"></footer>
+<script src="assets/app.js"></script>
+</body>
+</html>

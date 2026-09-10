@@ -1578,7 +1578,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Create: `index.html`
 - Modify: `assets/app.js` (`/* ==== END PAGES ==== */` 바로 위에 `pages.home` 추가)
 
-- [ ] **Step 1: index.html 작성**
+- [x] **Step 1: index.html 작성**
 
 `index.html`:
 ```html
@@ -1657,7 +1657,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 </html>
 ```
 
-- [ ] **Step 2: pages.home 추가**
+- [x] **Step 2: pages.home 추가**
 
 `assets/app.js`의 `/* ==== END PAGES ==== */` 바로 위에 추가:
 ```js
@@ -1719,7 +1719,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
   };
 ```
 
-- [ ] **Step 3: 브라우저 확인**
+- [x] **Step 3: 브라우저 확인**
 
 Run:
 ```bash
@@ -1728,7 +1728,7 @@ Run:
 그다음 Read 도구로 `docs/screenshots/home-desktop.png`를 열어 확인한다.
 Expected: 원본 로고가 있는 헤더, 히어로(문장형 헤드라인 + 흰 알약 버튼), 공간별 5칸, 특가 가로 행, 베스트 8개, 크림 브랜드 띠, 탭 + 신제품 8개, 룩북 + 후기 2개, 다크 푸터. "불러오지 못했습니다" 문구가 없어야 한다.
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git add index.html assets/app.js docs/screenshots/home-desktop.png && git commit -m "feat(home): 메인 페이지 9개 블록

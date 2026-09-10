@@ -253,6 +253,63 @@ window.RARO = (function () {
   /* ==== 페이지 초기화 ==== */
   const pages = {};
 
+  pages.home = function (data) {
+    const H = data.home;
+    /* 히어로 (첫 슬라이드는 LCP이므로 eager) */
+    const hero = document.getElementById('hero');
+    hero.innerHTML = H.hero.map((s, i) => '<div class="hero__slide' + (i === 0 ? ' is-active' : '') + '">' + img(s.img, s.title, null, i === 0)
+      + '<div class="hero__shade"></div><div class="hero__text container"><h1 class="h1">' + esc(s.title) + '</h1><p>' + esc(s.sub) + '</p>'
+      + '<a class="btn btn--white btn--lg" href="' + esc(s.href) + '">' + esc(s.cta) + '</a></div></div>').join('')
+      + '<div class="hero__dots">' + H.hero.map((_, i) => '<button type="button" aria-label="' + (i + 1) + '번 슬라이드"' + (i === 0 ? ' class="is-active"' : '') + '></button>').join('') + '</div>';
+    const slides = hero.querySelectorAll('.hero__slide'), dots = hero.querySelectorAll('.hero__dots button');
+    let cur = 0, timer = null;
+    const go = (n) => {
+      slides[cur].classList.remove('is-active'); dots[cur].classList.remove('is-active');
+      cur = (n + slides.length) % slides.length;
+      slides[cur].classList.add('is-active'); dots[cur].classList.add('is-active');
+    };
+    const auto = () => { clearInterval(timer); if (slides.length > 1) timer = setInterval(() => go(cur + 1), 6000); };
+    dots.forEach((d, i) => d.addEventListener('click', () => { go(i); auto(); }));
+    auto();
+    /* 공간별로 둘러보기: 대분류마다 상세가 있는 대표 상품의 두 번째 갤러리 사진 */
+    const repImage = (code) => {
+      const rep = data.products.find((p) => p.top === code && p.detail) || data.products.find((p) => p.top === code);
+      return rep ? ((rep.detail && rep.detail.gallery[1]) || rep.image) : '';
+    };
+    document.querySelector('[data-rooms]').innerHTML = NAV.map((t) => '<a class="card room" href="list.html?cate=' + t.code + '"><div class="card__tile">'
+      + img(repImage(t.code), t.name) + '</div><div class="room__name">' + esc(t.name) + '</div></a>').join('');
+    /* 이번 주 특가 */
+    renderCards(document.querySelector('[data-weekly]'), products(H.weekly), { badge: '특가' });
+    const daysLeft = (8 - new Date().getDay()) % 7 || 7;
+    document.querySelector('[data-weekly-left]').textContent = daysLeft + '일';
+    /* 베스트 */
+    renderCards(document.querySelector('[data-best]'), products(H.best));
+    /* 브랜드 띠 */
+    document.querySelector('[data-slogan]').textContent = data.company.slogan;
+    document.querySelector('[data-story]').textContent = data.company.story[0] + ' ' + data.company.story[1];
+    /* 새로 나온 가구: 전체 탭 = 사이트 NEW 목록, 카테고리 탭 = 해당 카테고리 최신 8개 */
+    const newAll = products(H.new);
+    const tabsEl = document.querySelector('[data-new-tabs]'), newEl = document.querySelector('[data-new]');
+    const tabs = [['all', '전체']].concat(NAV.map((t) => [t.code, t.short]));
+    tabsEl.innerHTML = tabs.map(([k, n], i) => '<button type="button" class="chip' + (i === 0 ? ' is-on' : '') + '" data-tab="' + k + '">' + esc(n) + '</button>').join('');
+    const showTab = (k) => {
+      const list = k === 'all' ? newAll : sortProducts(data.products.filter((p) => p.top === k), 'new').slice(0, 8);
+      renderCards(newEl, list, { badge: 'NEW' });
+      tabsEl.querySelectorAll('.chip').forEach((c) => c.classList.toggle('is-on', c.dataset.tab === k));
+    };
+    tabsEl.addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (b) showTab(b.dataset.tab); });
+    showTab('all');
+    /* 고객의 공간에서 */
+    const lb = H.lookbook[0], reviews = H.reviews.slice(0, 2);
+    document.querySelector('[data-space]').innerHTML =
+      (lb ? '<figure class="space__big">' + img(lb.img, lb.caption) + '<figcaption><a href="view.html?no=' + esc(lb.goodsNo) + '">' + esc(lb.caption) + ' →</a></figcaption></figure>' : '')
+      + reviews.map((r) => '<div class="review"><div class="review__img">' + (r.img ? img(r.img, '후기 사진') : '') + '</div>'
+        + '<div class="review__stars">' + stars(r.stars) + '</div><p class="review__text">' + esc(r.text) + '</p>'
+        + '<div class="review__meta">' + esc(r.name) + ' · ' + esc(r.date) + '</div>'
+        + '<a class="review__goods" href="view.html?no=' + esc(r.goodsNo) + '">' + esc(r.goodsName) + '</a></div>').join('')
+      + (reviews.length ? '' : '<div class="notice">후기를 불러오지 못했습니다.</div>');
+  };
+
   /* ==== END PAGES ==== */
 
   async function init() {
