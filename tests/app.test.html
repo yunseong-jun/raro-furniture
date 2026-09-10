@@ -1,0 +1,85 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>RARO app.js 테스트</title>
+<style>body{font-family:monospace;padding:20px} .ok{color:green} .ng{color:#c00;font-weight:bold}</style>
+<h1>RARO app.js 순수 함수 테스트</h1>
+<pre id="result">실행 중…</pre>
+<script src="../assets/app.js"></script>
+<script>
+(function () {
+  const out = [];
+  let pass = 0, fail = 0;
+  function eq(name, actual, expected) {
+    const a = JSON.stringify(actual), e = JSON.stringify(expected);
+    if (a === e) { pass++; out.push('PASS ' + name); }
+    else { fail++; out.push('FAIL ' + name + '\n   expected ' + e + '\n   actual   ' + a); }
+  }
+  const P = [
+    { no: '1', name: 'A 1400 세라믹 4인 식탁 세트', price: 398000, listPrice: 500000, reviewCount: 84, size: 1400, sizes: [1400], seats: 4, shape: '사각', material: '무광 세라믹', kind: '세트', priceBand: '30–50만원', cate: '012002', cates: ['012002'], top: '012' },
+    { no: '2', name: 'B 800 원목 2인 식탁 세트', price: 178000, listPrice: null, reviewCount: 3, size: 800, sizes: [800], seats: 2, shape: '사각', material: '원목', kind: '세트', priceBand: '10–20만원', cate: '013003', cates: ['013003'], top: '013' },
+    { no: '3', name: 'C 1800 유광 세라믹 6인 원형 테이블', price: 689000, listPrice: 800000, reviewCount: 20, size: 1800, sizes: [1800], seats: 6, shape: '원형', material: '유광 세라믹', kind: '단품', priceBand: '50만원 이상', cate: '012003', cates: ['012003', '012005'], top: '012' },
+  ];
+
+  eq('fmt', RARO.fmt(398000), '398,000원');
+  eq('fmt null', RARO.fmt(null), '가격 문의');
+  eq('discountRate 20%', RARO.discountRate(398000, 500000), 20);
+  eq('discountRate none', RARO.discountRate(178000, null), 0);
+  eq('discountRate not higher', RARO.discountRate(178000, 178000), 0);
+  eq('optionTotal', RARO.optionTotal(398000, 40000, 2), 876000);
+  eq('optionTotal null delta', RARO.optionTotal(398000, null, 1), 398000);
+  eq('optionTotal qty min 1', RARO.optionTotal(100, 0, 0), 100);
+  eq('sizeBand', [RARO.sizeBand(800), RARO.sizeBand(1400), RARO.sizeBand(1800), RARO.sizeBand(null)], ['1000 이하', '1200–1400', '1600 이상', null]);
+  eq('sizeBands multi', RARO.sizeBands({ size: 600, sizes: [600, 1400] }), ['1000 이하', '1200–1400']);
+  eq('sizeBands fallback to size', RARO.sizeBands({ size: 1800 }), ['1600 이상']);
+  eq('sort priceAsc', RARO.sortProducts(P, 'priceAsc').map(p => p.no), ['2', '1', '3']);
+  eq('sort priceDesc', RARO.sortProducts(P, 'priceDesc').map(p => p.no), ['3', '1', '2']);
+  eq('sort popular', RARO.sortProducts(P, 'popular').map(p => p.no), ['1', '3', '2']);
+  eq('sort new', RARO.sortProducts(P, 'new').map(p => p.no), ['3', '2', '1']);
+  eq('sort reco keeps order', RARO.sortProducts(P, 'reco').map(p => p.no), ['1', '2', '3']);
+  eq('sort does not mutate', P.map(p => p.no), ['1', '2', '3']);
+  eq('filter none', RARO.applyFilters(P, {}).length, 3);
+  eq('filter material', RARO.applyFilters(P, { material: ['무광 세라믹'] }).map(p => p.no), ['1']);
+  eq('filter size band', RARO.applyFilters(P, { size: ['1200–1400', '1600 이상'] }).map(p => p.no), ['1', '3']);
+  eq('filter size any of sizes', RARO.applyFilters([{ no: '9', name: 'x', size: 600, sizes: [600, 1400] }], { size: ['1200–1400'] }).length, 1);
+  eq('filter cate any of cates', RARO.applyFilters(P, { cate: ['012005'] }).map(p => p.no), ['3']);
+  eq('filter two groups AND', RARO.applyFilters(P, { size: ['1600 이상'], kind: ['세트'] }).map(p => p.no), []);
+  eq('filter seats', RARO.applyFilters(P, { seats: ['6인'] }).map(p => p.no), ['3']);
+  eq('filter price', RARO.applyFilters(P, { price: ['10–20만원'] }).map(p => p.no), ['2']);
+  eq('filter sale', RARO.applyFilters(P, { sale: ['1'] }).map(p => p.no), ['1', '3']);
+  eq('filterOptions material', RARO.filterOptions(P, 'material'), ['무광 세라믹', '원목', '유광 세라믹']);
+  eq('filterOptions price fixed order', RARO.filterOptions(P, 'price'), ['10–20만원', '30–50만원', '50만원 이상']);
+  eq('filterOptions size ordered', RARO.filterOptions(P, 'size'), ['1000 이하', '1200–1400', '1600 이상']);
+  eq('filterOptions seats', RARO.filterOptions(P, 'seats'), ['2인', '4인', '6인']);
+  eq('filterOptions cate from cates', RARO.filterOptions(P, 'cate'), ['012002', '012003', '012005', '013003']);
+  eq('inCate', [RARO.inCate(P[2], '012005'), RARO.inCate(P[2], '012002'), RARO.inCate({ cate: '006001' }, '006001')], [true, false, true]);
+  eq('searchProducts', RARO.searchProducts(P, '세라믹 4인').map(p => p.no), ['1']);
+  eq('searchProducts empty query', RARO.searchProducts(P, '').length, 3);
+  eq('childName', RARO.childName('012002'), '세라믹 식탁 세트');
+  eq('topName', RARO.topName('006'), '의자');
+  eq('topOfCate', RARO.topOfCate('004003'), '004');
+  eq('stars', RARO.stars(4), '★★★★☆');
+  eq('esc', RARO.esc('<a href="x">&\'</a>'), '&lt;a href=&quot;x&quot;&gt;&amp;&#39;&lt;/a&gt;');
+  eq('cardHTML srcset with large image', RARO.cardHTML({ no: '5', name: 'N', image: 's.jpg', imageLarge: 'L.jpg', price: 1000 }).includes('src="s.jpg" srcset="s.jpg 400w, L.jpg 1000w"'), true);
+  eq('cardHTML no srcset without large', RARO.cardHTML({ no: '5', name: 'N', image: 's.jpg', imageLarge: '', price: 1000 }).includes('srcset'), false);
+  eq('cardHTML soldout tag', RARO.cardHTML({ no: '5', name: 'N', image: 's.jpg', price: 1000, tags: ['품절'] }).includes('<span class="tag">품절</span>'), true);
+
+  eq('stars clamp high', RARO.stars(6), '★★★★★');
+  eq('stars clamp low', RARO.stars(0), '☆☆☆☆☆');
+  eq('stars invalid', RARO.stars('x'), '☆☆☆☆☆');
+  eq('img eager', RARO.img('a.jpg', 'x', null, true).includes('loading="eager" fetchpriority="high"'), true);
+  eq('cardHTML eager', RARO.cardHTML({ no: '5', name: 'N', image: 's.jpg', price: 1000 }, { eager: true }).includes('loading="eager"'), true);
+  eq('cardHTML default lazy', RARO.cardHTML({ no: '5', name: 'N', image: 's.jpg', price: 1000 }).includes('loading="lazy"'), true);
+  eq('filterOptions cate NAV order', RARO.filterOptions([{ cate: '012005', cates: ['012005', '012002'] }], 'cate'), ['012002', '012005']);
+  eq('searchProducts case-insensitive', RARO.searchProducts([{ name: 'RARO 식탁' }], 'raro').length, 1);
+  eq('cateDef', RARO.cateDef({ categories: [{ code: '012' }] }, '012').code, '012');
+  eq('cardHTML XSS safe', RARO.cardHTML({ no: '1', name: '"><img src=x onerror=alert(1)>', image: 's.jpg', price: 1 }).includes('<img src=x onerror=alert(1)>'), false);
+  eq('applyFilters accepts Set', RARO.applyFilters(P, { material: new Set(['원목']) }).map(p => p.no), ['2']);
+  eq('fmt zero', RARO.fmt(0), '0원');
+  eq('filterOptions price empty list', RARO.filterOptions([], 'price'), []);
+
+  const summary = (fail ? 'FAIL ' : 'OK ') + pass + ' passed, ' + fail + ' failed';
+  document.getElementById('result').innerHTML = out.map(l => '<div class="' + (l.startsWith('PASS') ? 'ok' : 'ng') + '">' + l.replace(/</g, '&lt;') + '</div>').join('') + '<hr><b id="summary">' + summary + '</b>';
+  document.title = summary;
+  console.log(summary);
+})();
+</script>

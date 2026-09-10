@@ -42,7 +42,7 @@
 - Create: `data/raw/.gitkeep`, `tests/__init__.py`, `tools/.gitkeep`, `docs/screenshots/.gitkeep`
 - Modify: `.gitignore`
 
-- [ ] **Step 1: 폴더와 빈 파일 생성**
+- [x] **Step 1: 폴더와 빈 파일 생성**
 
 Run:
 ```bash
@@ -50,7 +50,7 @@ mkdir -p data/raw tests tools docs/screenshots && touch data/raw/.gitkeep tests/
 ```
 Expected: 오류 없음. `ls data tests tools docs`에 폴더가 보임.
 
-- [ ] **Step 2: .gitignore에 수집 캐시 추가**
+- [x] **Step 2: .gitignore에 수집 캐시 추가**
 
 `.gitignore`를 다음 내용으로 덮어쓴다:
 ```
@@ -61,7 +61,7 @@ __pycache__/
 *.log
 ```
 
-- [ ] **Step 3: README 작성**
+- [x] **Step 3: README 작성**
 
 `README.md`:
 ````markdown
@@ -108,7 +108,7 @@ bash tools/screenshot.sh                                          # 4페이지 �
 리뷰 목록, 이벤트, 고객센터, 로그인·회원가입, 장바구니·주문, 마이페이지, 약관 페이지를 같은 디자인 시스템으로 확장한다. 별도 계획 문서로 진행.
 ````
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git add -A && git commit -m "chore: 프로젝트 골격과 README
@@ -129,7 +129,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - 상세: `<div class="item_detail_tit"><h3>이름</h3>`, `name="set_goods_price" value="398000"`, `name="set_goods_fixedPrice" value="500000.00"`, `<dl class="item_delivery"><dd><strong>40,000원</strong>`, 갤러리 `detailKeyID[n] = "<img src=\"URL\"`, 옵션 `<select name="optionNo_0">` 의 `<option>`(`=`로 시작하는 안내 항목 제외), 상세 이미지 = `id="detail"` 이후 hgodo 이미지 중 `/img/` `/info/` `/ourhome/` 경로 제외, 고시 표 `<table class="left_table_type">` th/td, 탭 `상품후기 <strong>(N)</strong>` `상품문의 <strong>(N)</strong>`.
 - 홈 리뷰: `<ul class="reviewWrap">` 블록. `background:url('IMG')`, `<a class="reviewContent">본문</a>`, `rating_star … width:100%`, `board_name`, `board_day`, `goods_view.php?goodsNo=N` + 상품명.
 
-- [ ] **Step 1: 실패하는 테스트 작성**
+- [x] **Step 1: 실패하는 테스트 작성**
 
 `tests/test_build.py`:
 ```python
@@ -294,12 +294,12 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 2: 테스트가 실패하는지 확인**
+- [x] **Step 2: 테스트가 실패하는지 확인**
 
 Run: `PYTHONIOENCODING=utf-8 python -m unittest tests.test_build -v`
 Expected: `ModuleNotFoundError: No module named 'build'` 로 전부 실패(ERROR).
 
-- [ ] **Step 3: build.py 파서 구현 (수집·조립은 Task 3에서)**
+- [x] **Step 3: build.py 파서 구현 (수집·조립은 Task 3에서)**
 
 `data/build.py`:
 ```python
@@ -512,12 +512,12 @@ def price_band(price: int) -> str:
     return "50만원 이상"
 ```
 
-- [ ] **Step 4: 테스트 통과 확인**
+- [x] **Step 4: 테스트 통과 확인**
 
 Run: `PYTHONIOENCODING=utf-8 python -m unittest tests.test_build -v`
 Expected: `Ran 10 tests … OK`
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add data/build.py tests/test_build.py && git commit -m "feat(data): 목록·상세·리뷰 파서와 상품 속성 추출
@@ -534,7 +534,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Create: `data/site.json` (실행 결과)
 - Modify: `tests/test_build.py` (조립 테스트 1개 추가)
 
-- [ ] **Step 1: 조립 로직 테스트 추가**
+- [x] **Step 1: 조립 로직 테스트 추가**
 
 `tests/test_build.py` 맨 아래 `if __name__` 위에 추가:
 ```python
@@ -566,12 +566,12 @@ class AssembleTest(unittest.TestCase):
             self.assertIn(top["code"], build.FEATURES)
 ```
 
-- [ ] **Step 2: 테스트 실패 확인**
+- [x] **Step 2: 테스트 실패 확인**
 
 Run: `PYTHONIOENCODING=utf-8 python -m unittest tests.test_build.AssembleTest -v`
 Expected: `AttributeError: module 'build' has no attribute 'assemble_product'`
 
-- [ ] **Step 3: 상수와 조립·수집 코드 추가**
+- [x] **Step 3: 상수와 조립·수집 코드 추가**
 
 `data/build.py` 맨 아래에 추가:
 ```python
@@ -770,17 +770,17 @@ if __name__ == "__main__":
     build(offline="--offline" in sys.argv)
 ```
 
-- [ ] **Step 4: 테스트 통과 확인**
+- [x] **Step 4: 테스트 통과 확인**
 
 Run: `PYTHONIOENCODING=utf-8 python -m unittest tests.test_build -v`
 Expected: `Ran 12 tests … OK`
 
-- [ ] **Step 5: 실제 수집 실행**
+- [x] **Step 5: 실제 수집 실행**
 
 Run: `PYTHONIOENCODING=utf-8 python data/build.py`
 Expected: `fetched` 줄이 19(목록) + 12(상세) + 1(홈) = 32개 출력된 뒤 요약. 상품 수는 300개 안팎(소분류당 40개 상한), 상세 12개, 후기 1개 이상, 가격 누락 0개. `home.*` 경고가 나오면 해당 goodsNo가 어느 목록 첫 페이지에도 없는 것이므로 `HOME` 상수에서 빼고 다시 실행한다(`--offline`으로 재실행하면 네트워크 없이 재조립됨).
 
-- [ ] **Step 6: 결과 확인**
+- [x] **Step 6: 결과 확인**
 
 Run:
 ```bash
@@ -788,7 +788,7 @@ PYTHONIOENCODING=utf-8 python -c "import json;d=json.load(open('data/site.json',
 ```
 Expected: `허그 1400 포세린 통 세라믹 4인 식탁 세트 398000 500000 1400 4 무광 세라믹 세트`, 갤러리 4개 이상, 상세 이미지 1개 이상, 옵션 3개, 히어로 2번째 이미지가 `…1000001395_1000_1.jpg`, 후기 dict 출력.
 
-- [ ] **Step 7: 커밋**
+- [x] **Step 7: 커밋**
 
 ```bash
 git add data/build.py data/site.json tests/test_build.py && git commit -m "feat(data): 사이트 수집·조립 스크립트와 site.json 생성
@@ -805,7 +805,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 
 한 파일에 섹션 주석으로 구분한다. 순서: 토큰 → 리셋 → 레이아웃 → 타이포 → 버튼·칩 → 헤더·드로어 → 카드·그리드 → 메인 섹션 → 목록 → 상세 → 브랜드 → 푸터 → 유틸 → 반응형. 페이지별 규칙은 Task 6–9에서 이 파일의 해당 섹션에 이미 포함되어 있으므로, 그 Task들에서는 CSS를 추가로 쓰지 않는다.
 
-- [ ] **Step 1: style.css 작성**
+- [x] **Step 1: style.css 작성**
 
 `assets/style.css`:
 ```css
@@ -1203,12 +1203,12 @@ del { text-decoration: line-through; }
 }
 ```
 
-- [ ] **Step 2: 문법 확인**
+- [x] **Step 2: 문법 확인**
 
 Run: `python -c "import re,io;s=open('assets/style.css',encoding='utf-8').read();print('braces', s.count('{'), s.count('}'))"`
 Expected: 두 숫자가 같음(여는/닫는 중괄호 수 일치).
 
-- [ ] **Step 3: 커밋**
+- [x] **Step 3: 커밋**
 
 ```bash
 git add assets/style.css && git commit -m "feat(style): 디자인 토큰과 공통 컴포넌트 스타일
@@ -1226,7 +1226,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 
 `app.js`는 즉시실행함수 하나로 `window.RARO`를 만든다. 페이지별 초기화 함수는 `pages` 객체에 등록하며, Task 6–9에서 `/* ==== END PAGES ==== */` 주석 **바로 위**에 추가한다.
 
-- [ ] **Step 1: 실패하는 테스트 페이지 작성**
+- [x] **Step 1: 실패하는 테스트 페이지 작성**
 
 `tests/app.test.html`:
 ```html
@@ -1294,7 +1294,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 </script>
 ```
 
-- [ ] **Step 2: 실패 확인**
+- [x] **Step 2: 실패 확인**
 
 먼저 로컬 서버를 띄운다. Bash 도구의 `run_in_background: true`로 아래를 **한 번만** 실행한다(이미 떠 있으면 생략. 포트가 잡혀 있으면 `netstat -ano | grep 8080`으로 확인):
 ```bash
@@ -1308,7 +1308,7 @@ Expected: `app.js`가 없으므로 `RARO is not defined` 오류로 결과가 비
 
 `--dump-dom`이 아무것도 출력하지 않으면 대신 `--screenshot=docs/screenshots/test.png --window-size=900,1400` 으로 찍어 Read 도구로 확인한다.
 
-- [ ] **Step 3: app.js 공통 코드 작성**
+- [x] **Step 3: app.js 공통 코드 작성**
 
 `assets/app.js`:
 ```js
@@ -1552,7 +1552,7 @@ window.RARO = (function () {
 })();
 ```
 
-- [ ] **Step 4: 테스트 통과 확인**
+- [x] **Step 4: 테스트 통과 확인**
 
 Run:
 ```bash
@@ -1562,7 +1562,7 @@ Expected: `id="summary">OK 33 passed, 0 failed`
 
 FAIL이 있으면 `--dump-dom` 전체 출력에서 `FAIL` 줄을 읽고 `app.js`를 고친다. `searchProducts`는 공백으로 나눈 모든 단어가 상품명에 포함되어야 한다(AND).
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add assets/app.js tests/app.test.html && git commit -m "feat(js): RARO 공통 코드(데이터·카드·헤더·푸터)와 순수 함수 테스트
@@ -1578,7 +1578,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Create: `index.html`
 - Modify: `assets/app.js` (`/* ==== END PAGES ==== */` 바로 위에 `pages.home` 추가)
 
-- [ ] **Step 1: index.html 작성**
+- [x] **Step 1: index.html 작성**
 
 `index.html`:
 ```html
@@ -1657,7 +1657,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 </html>
 ```
 
-- [ ] **Step 2: pages.home 추가**
+- [x] **Step 2: pages.home 추가**
 
 `assets/app.js`의 `/* ==== END PAGES ==== */` 바로 위에 추가:
 ```js
@@ -1719,7 +1719,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
   };
 ```
 
-- [ ] **Step 3: 브라우저 확인**
+- [x] **Step 3: 브라우저 확인**
 
 Run:
 ```bash
@@ -1728,7 +1728,7 @@ Run:
 그다음 Read 도구로 `docs/screenshots/home-desktop.png`를 열어 확인한다.
 Expected: 원본 로고가 있는 헤더, 히어로(문장형 헤드라인 + 흰 알약 버튼), 공간별 5칸, 특가 가로 행, 베스트 8개, 크림 브랜드 띠, 탭 + 신제품 8개, 룩북 + 후기 2개, 다크 푸터. "불러오지 못했습니다" 문구가 없어야 한다.
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git add index.html assets/app.js docs/screenshots/home-desktop.png && git commit -m "feat(home): 메인 페이지 9개 블록
@@ -1744,7 +1744,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Create: `list.html`
 - Modify: `assets/app.js` (`/* ==== END PAGES ==== */` 바로 위에 `pages.list` 추가)
 
-- [ ] **Step 1: list.html 작성**
+- [x] **Step 1: list.html 작성**
 
 `list.html`:
 ```html
@@ -1809,7 +1809,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 </html>
 ```
 
-- [ ] **Step 2: pages.list 추가**
+- [x] **Step 2: pages.list 추가**
 
 `assets/app.js`의 `/* ==== END PAGES ==== */` 바로 위에 추가:
 ```js
@@ -1892,7 +1892,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
   };
 ```
 
-- [ ] **Step 3: 브라우저 확인**
+- [x] **Step 3: 브라우저 확인**
 
 Run:
 ```bash
@@ -1903,7 +1903,7 @@ E="/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"; C="--headless=
 ```
 Read 도구로 두 스크린샷 확인. Expected: 제목 "세라믹 · 대리석 식탁" + 설명 + 소분류 칩 5개(전체 N 포함), 왼쪽 필터에 사이즈·형태·상판·구성·가격 그룹, 3열 카드 12개, "더 보기", 크림 가이드 띠. `data-count`가 0보다 큼.
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git add list.html assets/app.js docs/screenshots/list-desktop.png docs/screenshots/list-all-sale.png && git commit -m "feat(list): 상품 목록 — 소분류 칩, 자동 필터, 정렬, 더 보기, 구매 가이드
@@ -1919,7 +1919,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Create: `view.html`
 - Modify: `assets/app.js` (`/* ==== END PAGES ==== */` 바로 위에 `pages.view` 추가)
 
-- [ ] **Step 1: view.html 작성**
+- [x] **Step 1: view.html 작성**
 
 `view.html`:
 ```html
@@ -1999,7 +1999,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 </html>
 ```
 
-- [ ] **Step 2: pages.view 추가**
+- [x] **Step 2: pages.view 추가**
 
 `assets/app.js`의 `/* ==== END PAGES ==== */` 바로 위에 추가:
 ```js
@@ -2119,7 +2119,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
   };
 ```
 
-- [ ] **Step 3: 브라우저 확인**
+- [x] **Step 3: 브라우저 확인**
 
 Run:
 ```bash
@@ -2129,7 +2129,7 @@ E="/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"; C="--headless=
 ```
 Read 도구로 확인. Expected(491): 갤러리 + 썸네일, 라벨 "세라믹 식탁 세트 · 허그", 가격 `20% 398,000원 500,000원`, 구성 3개 카드(첫 번째 선택), 색상 스와치 2개, 수량, 총액, 버튼 3개, 탭 바, 특징 3개, 상세 이미지(접힘), 사양 표(값 있는 항목만), 리뷰 개수, 허그 시리즈 4개, 비슷한 가격대 4개. Expected(003, 상세 없음): 옵션 블록 없음, "상세 이미지는 실제 사이트…" 안내, 나머지 정상.
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git add view.html assets/app.js docs/screenshots/view-desktop.png docs/screenshots/view-nodetail.png && git commit -m "feat(view): 상품 상세 — 갤러리, 스티키 구매 패널, 구성 옵션, 탭, 사양, 함께 보기
@@ -2145,7 +2145,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Create: `brand.html`
 - Modify: `assets/app.js` (`/* ==== END PAGES ==== */` 바로 위에 `pages.brand` 추가)
 
-- [ ] **Step 1: brand.html 작성**
+- [x] **Step 1: brand.html 작성**
 
 `brand.html`:
 ```html
@@ -2202,7 +2202,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 </html>
 ```
 
-- [ ] **Step 2: pages.brand 추가**
+- [x] **Step 2: pages.brand 추가**
 
 `assets/app.js`의 `/* ==== END PAGES ==== */` 바로 위에 추가:
 ```js
@@ -2229,7 +2229,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
   };
 ```
 
-- [ ] **Step 3: 브라우저 확인**
+- [x] **Step 3: 브라우저 확인**
 
 Run:
 ```bash
@@ -2237,7 +2237,7 @@ Run:
 ```
 Read 도구로 확인. Expected: 흑백 공방 사진 히어로 + 슬로건, 스테이트먼트 3문장, 숫자 3개(30년/6개/5종), 소재 카드 3개, 크림 쇼룸 섹션(주소·전화·"확인 필요"·길찾기 버튼).
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git add brand.html assets/app.js docs/screenshots/brand-desktop.png && git commit -m "feat(brand): 브랜드 스토리 + 일산 쇼룸 페이지
@@ -2254,7 +2254,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Modify: `assets/style.css`, `assets/app.js` (스크린샷에서 발견한 문제만)
 - Create: `docs/screenshots/*.png` (12장)
 
-- [ ] **Step 1: 스크린샷 스크립트 작성**
+- [x] **Step 1: 스크린샷 스크립트 작성**
 
 `tools/screenshot.sh`:
 ```bash
@@ -2281,12 +2281,12 @@ for p in "${PAGES[@]}"; do
 done
 ```
 
-- [ ] **Step 2: 실행**
+- [x] **Step 2: 실행**
 
 Run: `bash tools/screenshot.sh`
 Expected: `saved …` 12줄. `ls docs/screenshots/*.png | wc -l` → 12 이상.
 
-- [ ] **Step 3: 데이터 로드 실패 문구가 없는지 확인**
+- [x] **Step 3: 데이터 로드 실패 문구가 없는지 확인**
 
 Run:
 ```bash
@@ -2294,7 +2294,7 @@ E="/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"; for u in "inde
 ```
 Expected: 네 줄 모두 `-> 0`.
 
-- [ ] **Step 4: 12장을 Read 도구로 하나씩 열어 점검**
+- [x] **Step 4: 12장을 Read 도구로 하나씩 열어 점검**
 
 점검 항목(스펙 3장·4장 기준):
 - 데스크톱(1440): 헤더 2행(로고·검색·유틸 / 카테고리 메뉴), 상품 4열, 상세 7:5 2단, 푸터 5열.
@@ -2308,7 +2308,7 @@ Expected: 네 줄 모두 `-> 0`.
 - 상세 페이지 스티키 패널이 헤더에 가려짐 → `--header-h` 값을 실제 헤더 높이(개발자 도구 대신 스크린샷의 헤더 높이 픽셀)로 맞춤.
 - 긴 상품명이 카드 높이를 흔듦 → `.card__name`에 `min-height: 2.9em` 추가.
 
-- [ ] **Step 5: JS 테스트 재확인**
+- [x] **Step 5: JS 테스트 재확인**
 
 Run:
 ```bash
@@ -2316,7 +2316,7 @@ Run:
 ```
 Expected: `OK 33 passed, 0 failed` 와 `OK`.
 
-- [ ] **Step 6: 커밋**
+- [x] **Step 6: 커밋**
 
 ```bash
 git add tools/screenshot.sh docs/screenshots assets/style.css assets/app.js && git commit -m "test: 4페이지 × 3폭 스크린샷과 반응형 보정
@@ -2332,7 +2332,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Create: `docs/godomall-porting.md`
 - Modify: `README.md` (스크린샷 링크 추가)
 
-- [ ] **Step 1: 이식 가이드 작성**
+- [x] **Step 1: 이식 가이드 작성**
 
 `docs/godomall-porting.md`:
 ````markdown
@@ -2377,7 +2377,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 스킨 미리보기 URL로 `tools/screenshot.sh`를 `BASE=<미리보기 URL>`로 실행해 같은 12장을 찍고 프로토타입 스크린샷과 비교한다.
 ````
 
-- [ ] **Step 2: README에 스크린샷·문서 링크 추가**
+- [x] **Step 2: README에 스크린샷·문서 링크 추가**
 
 `README.md`의 `## 2단계` 앞에 추가:
 ````markdown
@@ -2388,7 +2388,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - 설계 문서: `docs/superpowers/specs/2026-09-10-raro-furniture-redesign-design.md`
 ````
 
-- [ ] **Step 3: 최종 확인**
+- [x] **Step 3: 최종 확인**
 
 Run:
 ```bash

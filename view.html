@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>상품 상세 — 라로퍼니처</title>
+<link rel="icon" href="assets/logo-header.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body data-page="view">
+<a class="skip" href="#main">본문 바로가기</a>
+<header class="hdr" id="site-header"></header>
+<main id="main" class="container" tabindex="-1">
+  <div class="pdp" data-pdp data-needs-data></div>
+
+  <nav class="ptabs" data-ptabs aria-label="상품 정보 탭">
+    <ul>
+      <li><a href="#sec-detail" class="is-active">상세정보</a></li>
+      <li><a href="#sec-spec">사양 · 치수</a></li>
+      <li><a href="#sec-ship">배송 · 교환 · 반품</a></li>
+      <li><a href="#sec-review">리뷰 <span data-rc></span></a></li>
+      <li><a href="#sec-qna">Q&amp;A <span data-qc></span></a></li>
+    </ul>
+  </nav>
+
+  <section class="sec sec--tight" id="sec-detail">
+    <div class="feats" data-feats></div>
+    <div class="detail-imgs mt-40" data-detail-imgs></div>
+    <div class="detail-imgs__btn" data-detail-btn></div>
+  </section>
+
+  <section class="sec" id="sec-spec">
+    <h2 class="h2">사양 · 치수</h2>
+    <div class="spec mt-24" data-spec></div>
+  </section>
+
+  <section class="sec" id="sec-ship">
+    <h2 class="h2">배송 · 교환 · 반품</h2>
+    <div class="shipinfo mt-16">
+      <h4>배송 · 설치</h4>
+      <p data-ship-text></p>
+      <p>배송비를 수령 시 결제하는 상품이 많습니다. 설치 서비스 여부와 현관 · 엘리베이터 · 통로 폭은 주문 전에 확인해 주세요. 도서산간 지역은 추가 배송비가 있을 수 있습니다.</p>
+      <h4>교환 · 반품</h4>
+      <p>교환 · 반품 기준은 고객센터(031-977-7352) 또는 이용안내에서 확인해 주세요.</p>
+      <h4>A/S</h4>
+      <p data-as-text></p>
+    </div>
+  </section>
+
+  <section class="sec" id="sec-review">
+    <h2 class="h2">리뷰</h2>
+    <div class="rsum mt-24" data-rsum></div>
+  </section>
+
+  <section class="sec" id="sec-qna">
+    <h2 class="h2">Q&amp;A</h2>
+    <p class="sub">상품 문의는 로그인 후 남길 수 있습니다. 급한 문의는 카카오톡 상담 또는 고객센터로 연락해 주세요.</p>
+    <div class="mt-16"><a class="btn btn--secondary" href="#">문의 남기기</a></div>
+  </section>
+
+  <section class="sec" id="sec-related">
+    <div class="sec__head"><div><h2 class="h2" data-series-title>함께 보기</h2></div></div>
+    <div class="grid grid--4" data-series></div>
+    <div class="sec__head mt-40"><div><h2 class="h2">비슷한 가격대의 다른 선택</h2></div></div>
+    <div class="grid grid--4" data-similar></div>
+  </section>
+</main>
+<div class="buybar" data-buybar></div>
+<footer class="ftr" id="site-footer"></footer>
+<script src="assets/app.js"></script>
+</body>
+</html>
