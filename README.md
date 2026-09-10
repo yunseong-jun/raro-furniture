@@ -5,7 +5,7 @@ rarofurniture.co.kr(고도몰)을 Article × Floyd 방향으로 다시 설계한
 ## 실행
 
 ```bash
-# 1) 데이터 생성 (사이트에서 약 35개 페이지를 1초 간격으로 가져온다. 캐시가 있으면 재요청하지 않음)
+# 1) 데이터 생성 (사이트에서 약 42개 페이지를 1초 간격으로 가져온다. 캐시가 있으면 재요청하지 않음)
 PYTHONIOENCODING=utf-8 python data/build.py
 
 # 2) 로컬 서버
@@ -33,8 +33,15 @@ python -m http.server 8080
 
 ```bash
 PYTHONIOENCODING=utf-8 python -m unittest tests.test_build -v     # 파서
-bash tools/screenshot.sh                                          # 4페이지 × 3폭 스크린샷 → docs/screenshots/
+powershell -ExecutionPolicy Bypass -File tools/screenshot.ps1   # 4페이지 × 3폭 스크린샷 → docs/screenshots/ (bash tools/screenshot.sh 도 동일)
 ```
+
+## 결과 확인
+
+- 스크린샷 12장: `docs/screenshots/` (`home|list|view|brand` × `desktop|tablet|mobile`). 헤드리스 Edge의 최소 뷰포트 제한으로 모바일은 500px 폭으로 찍는다.
+- 고도몰 이식 가이드: `docs/godomall-porting.md`
+- 설계 문서: `docs/superpowers/specs/2026-09-10-raro-furniture-redesign-design.md` · 구현 계획: `docs/superpowers/plans/2026-09-10-raro-furniture-phase1.md`
+- JS 테스트: `http://localhost:8080/tests/app.test.html` (55개) · 파이썬 테스트: `python -m unittest tests.test_build` (41개)
 
 ## 2단계
 

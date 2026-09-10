@@ -2332,7 +2332,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Create: `docs/godomall-porting.md`
 - Modify: `README.md` (스크린샷 링크 추가)
 
-- [ ] **Step 1: 이식 가이드 작성**
+- [x] **Step 1: 이식 가이드 작성**
 
 `docs/godomall-porting.md`:
 ````markdown
@@ -2377,7 +2377,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 스킨 미리보기 URL로 `tools/screenshot.sh`를 `BASE=<미리보기 URL>`로 실행해 같은 12장을 찍고 프로토타입 스크린샷과 비교한다.
 ````
 
-- [ ] **Step 2: README에 스크린샷·문서 링크 추가**
+- [x] **Step 2: README에 스크린샷·문서 링크 추가**
 
 `README.md`의 `## 2단계` 앞에 추가:
 ````markdown
@@ -2388,7 +2388,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - 설계 문서: `docs/superpowers/specs/2026-09-10-raro-furniture-redesign-design.md`
 ````
 
-- [ ] **Step 3: 최종 확인**
+- [x] **Step 3: 최종 확인**
 
 Run:
 ```bash
