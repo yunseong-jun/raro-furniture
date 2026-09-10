@@ -77,7 +77,7 @@ del { text-decoration: line-through; }
 .btn--icon { width: 44px; padding: 0; }
 .hero__dots button:focus-visible, .chip:focus-visible, .btn:focus-visible, .card:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .chips { display: flex; gap: 8px; flex-wrap: wrap; }
-.chip { display: inline-flex; align-items: center; height: 34px; padding: 0 14px; border-radius: var(--radius-pill);
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: var(--radius-pill);
         border: 1px solid var(--line); background: #fff; font-size: 13px; color: var(--ink-2); }
 .chip:hover { border-color: var(--ink); color: var(--ink); }
 .chip.is-on { background: var(--ink); color: #fff; border-color: var(--ink); }
@@ -171,7 +171,7 @@ del { text-decoration: line-through; }
 .hero__text .h1 { color: #fff; text-shadow: 0 1px 12px rgba(0,0,0,.15); }
 .hero__text p { font-size: 17px; opacity: .94; margin: 12px auto 24px; max-width: 560px; }
 .hero__dots { position: absolute; bottom: 22px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; }
-.hero__dots button { width: 8px; height: 8px; border-radius: 50%; border: 0; padding: 0; background: rgba(255,255,255,.5); }
+.hero__dots button { width: 24px; height: 24px; border-radius: 50%; border: 6px solid transparent; padding: 0; background: rgba(255,255,255,.5); background-clip: padding-box; }
 .hero__dots button.is-active { background: #fff; }
 .weekly__note { color: var(--accent); font-size: 14px; font-weight: 600; margin-left: 8px; }
 .band { background: var(--cream); margin-top: var(--section); padding: 72px 0; }
@@ -185,6 +185,7 @@ del { text-decoration: line-through; }
 .space__big { position: relative; aspect-ratio: 4 / 3; background: var(--tile); border-radius: var(--radius-sm); overflow: hidden; }
 .space__big img { width: 100%; height: 100%; object-fit: cover; }
 .space__big figcaption { position: absolute; left: 16px; bottom: 16px; background: rgba(255,255,255,.92); border-radius: var(--radius-pill); padding: 6px 14px; font-size: 13px; }
+.review { min-width: 0; }
 .review__img { position: relative; aspect-ratio: 1 / 1; background: var(--tile); border-radius: var(--radius-sm); overflow: hidden; }
 .review__img img { width: 100%; height: 100%; object-fit: cover; }
 .review__stars { color: var(--accent); font-size: 12px; letter-spacing: 1px; margin-top: 10px; }
@@ -203,6 +204,7 @@ del { text-decoration: line-through; }
 .filters__group { margin-bottom: 22px; }
 .filters fieldset { border: 0; padding: 0; margin: 0 0 22px; min-width: 0; } .filters legend { padding: 0; }
 .filters__group h5 { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+.filters__legend { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--ink-3); margin-bottom: 8px; }
 .filters label { display: flex; align-items: center; gap: 8px; font-size: 14px; padding: 4px 0; cursor: pointer; color: var(--ink-2); }
 .filters label:hover { color: var(--ink); }
 .filters input { accent-color: var(--ink); width: 16px; height: 16px; }
@@ -210,6 +212,7 @@ del { text-decoration: line-through; }
 .filters__apply { display: none; }
 .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; font-size: 14px; color: var(--ink-2); }
 .toolbar__count b { color: var(--ink); }
+.toolbar__right { display: flex; gap: 8px; align-items: center; }
 .toolbar__filter-btn { display: none; }
 .active-chips { margin-bottom: 14px; }
 .active-chips:empty { display: none; }
@@ -367,8 +370,8 @@ body.has-buybar .chat-fab { bottom: 84px; }   /* 하단 구매 바와 겹치지 
   .space { grid-template-columns: 1fr 1fr; gap: 12px; }
   .list__body { grid-template-columns: 1fr; gap: 0; margin-top: 20px; }
   .filters { position: fixed; left: 0; right: 0; bottom: 0; top: auto; max-height: 82vh; background: #fff; border-radius: 16px 16px 0 0;
-             padding: 20px; transform: translateY(100%); transition: transform .3s; z-index: 63; overflow: auto; }
-  .filters.is-open { transform: none; }
+             padding: 20px; transform: translateY(100%); visibility: hidden; transition: transform .3s, visibility 0s .3s; z-index: 63; overflow: auto; }
+  .filters.is-open { transform: none; visibility: visible; transition-delay: 0s; }
   .filters__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-weight: 700; }
   .filters__head button { border: 0; background: none; font-size: 20px; }
   .filters__apply { display: block; margin-top: 12px; }

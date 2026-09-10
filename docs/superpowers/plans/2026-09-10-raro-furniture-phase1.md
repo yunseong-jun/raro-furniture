@@ -2145,7 +2145,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Create: `brand.html`
 - Modify: `assets/app.js` (`/* ==== END PAGES ==== */` 바로 위에 `pages.brand` 추가)
 
-- [ ] **Step 1: brand.html 작성**
+- [x] **Step 1: brand.html 작성**
 
 `brand.html`:
 ```html
@@ -2202,7 +2202,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 </html>
 ```
 
-- [ ] **Step 2: pages.brand 추가**
+- [x] **Step 2: pages.brand 추가**
 
 `assets/app.js`의 `/* ==== END PAGES ==== */` 바로 위에 추가:
 ```js
@@ -2229,7 +2229,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
   };
 ```
 
-- [ ] **Step 3: 브라우저 확인**
+- [x] **Step 3: 브라우저 확인**
 
 Run:
 ```bash
@@ -2237,7 +2237,7 @@ Run:
 ```
 Read 도구로 확인. Expected: 흑백 공방 사진 히어로 + 슬로건, 스테이트먼트 3문장, 숫자 3개(30년/6개/5종), 소재 카드 3개, 크림 쇼룸 섹션(주소·전화·"확인 필요"·길찾기 버튼).
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git add brand.html assets/app.js docs/screenshots/brand-desktop.png && git commit -m "feat(brand): 브랜드 스토리 + 일산 쇼룸 페이지

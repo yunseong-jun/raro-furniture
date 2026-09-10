@@ -72,7 +72,8 @@ window.RARO = (function () {
   function sortProducts(list, key) {
     const a = list.slice();
     switch (key) {
-      case 'popular': case 'review': return a.sort((x, y) => (y.reviewCount || 0) - (x.reviewCount || 0));
+      case 'popular': return a.sort((x, y) => (y.reviewCount || 0) - (x.reviewCount || 0) || (y.price || 0) - (x.price || 0));
+      case 'review': return a.sort((x, y) => (y.reviewCount || 0) - (x.reviewCount || 0) || Number(y.no) - Number(x.no));
       case 'priceAsc': return a.sort((x, y) => (x.price || 0) - (y.price || 0));
       case 'priceDesc': return a.sort((x, y) => (y.price || 0) - (x.price || 0));
       case 'new': return a.sort((x, y) => Number(y.no) - Number(x.no));
@@ -105,7 +106,7 @@ window.RARO = (function () {
     const push = (v) => { if (v != null && !vals.includes(v)) vals.push(v); };
     list.forEach((p) => { if (key === 'cate') catesOf(p).forEach(push); else push(valueFor(p, key)); });
     if (key === 'seats') vals.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
-    if (key === 'cate') vals.sort((a, b) => cateRank(a) - cateRank(b));
+    if (key === 'cate' || key === 'top') vals.sort((a, b) => cateRank(a) - cateRank(b));
     return vals;
   }
   function searchProducts(list, q) {
@@ -257,8 +258,9 @@ window.RARO = (function () {
     const H = data.home;
     /* 히어로 (첫 슬라이드는 LCP이므로 eager) */
     const hero = document.getElementById('hero');
-    hero.innerHTML = H.hero.map((s, i) => '<div class="hero__slide' + (i === 0 ? ' is-active' : '') + '">' + img(s.img, s.title, null, i === 0 ? true : 'low')
-      + '<div class="hero__shade"></div><div class="hero__text container"><h1 class="h1">' + esc(s.title) + '</h1><p>' + esc(s.sub) + '</p>'
+    hero.innerHTML = '<h1 class="sr-only">라로퍼니처 — 친환경 가구 브랜드</h1>'
+      + H.hero.map((s, i) => '<div class="hero__slide' + (i === 0 ? ' is-active' : '') + '">' + img(s.img, s.title, null, i === 0 ? true : 'low')
+      + '<div class="hero__shade"></div><div class="hero__text container"><p class="h1">' + esc(s.title) + '</p><p>' + esc(s.sub) + '</p>'
       + '<a class="btn btn--white btn--lg" href="' + esc(s.href) + '">' + esc(s.cta) + '</a></div></div>').join('')
       + '<div class="hero__dots">' + H.hero.map((_, i) => '<button type="button" aria-label="' + (i + 1) + '번 슬라이드" aria-current="' + (i === 0 ? 'true' : 'false') + '"' + (i === 0 ? ' class="is-active"' : '') + '></button>').join('') + '</div>';
     const slides = hero.querySelectorAll('.hero__slide'), dots = hero.querySelectorAll('.hero__dots button');
@@ -330,18 +332,20 @@ window.RARO = (function () {
     const title = q ? '"' + q + '" 검색 결과' : !topDef ? (sale ? '이번 주 특가' : '전체 상품') : isChild ? childName(cate) : topDef.name;
     document.title = title + ' — 라로퍼니처';
     document.querySelector('[data-title]').textContent = title;
-    document.querySelector('[data-desc]').textContent = topDef ? topDef.desc : (q ? '상품명에 검색어가 모두 포함된 상품입니다.' : '라로퍼니처의 모든 가구를 한 번에.');
+    const saleOnly = sale && !q && !topDef;
+    document.querySelector('[data-desc]').textContent = topDef ? topDef.desc : (q ? '상품명에 검색어가 모두 포함된 상품입니다.' : saleOnly ? '정가 대비 20% 이상 할인 중인 상품입니다. 매주 월요일에 바뀝니다.' : '라로퍼니처의 모든 가구를 한 번에.');
     document.querySelector('[data-crumb]').innerHTML = '<a href="index.html">홈</a> › '
-      + (topDef ? '<a href="list.html?cate=' + top + '">' + esc(topDef.name) + '</a>' : '전체 상품') + (isChild ? ' › ' + esc(childName(cate)) : '');
+      + (topDef ? '<a href="list.html?cate=' + top + '">' + esc(topDef.name) + '</a>' : (saleOnly ? '이번 주 특가' : '전체 상품')) + (isChild ? ' › ' + esc(childName(cate)) : '');
     /* 기본 목록 (소분류는 cates 기준) */
     let base = data.products.filter((p) => !top || p.top === top);
     if (q) base = searchProducts(base, q);
-    if (sale) base = base.filter((p) => discountRate(p.price, p.listPrice) > 0);
+    if (sale) base = base.filter((p) => discountRate(p.price, p.listPrice) >= 20);
     const subEl = document.querySelector('[data-subcats]');
     if (topDef) {
+      const childCounts = topDef.children.map((c) => [c, base.filter((p) => inCate(p, c.code)).length]);
       subEl.innerHTML = '<a class="chip' + (!isChild ? ' is-on' : '') + '" href="list.html?cate=' + top + '">전체 ' + base.length + '</a>'
-        + topDef.children.map((c) => '<a class="chip' + (cate === c.code ? ' is-on' : '') + '" href="list.html?cate=' + c.code + '">' + esc(c.name)
-          + ' <span class="muted">' + base.filter((p) => inCate(p, c.code)).length + '</span></a>').join('');
+        + childCounts.filter(([c, n]) => n > 0 || cate === c.code).map(([c, n]) => '<a class="chip' + (cate === c.code ? ' is-on' : '') + '" href="list.html?cate=' + c.code + '">' + esc(c.name)
+          + ' <span class="muted">' + n + '</span></a>').join('');
     } else { subEl.remove(); }
     if (isChild) base = base.filter((p) => inCate(p, cate));
     /* 필터 (소분류 안에서는 종류 필터 제외) */
@@ -349,14 +353,19 @@ window.RARO = (function () {
     const active = {};
     const groupsEl = document.querySelector('[data-filter-groups]');
     groupsEl.innerHTML = defs.map(([k, label]) => {
-      const opts = filterOptions(base, k);
+      let opts = filterOptions(base, k);
+      if (k === 'cate' && topDef) {
+        const childCodes = topDef.children.map((c) => c.code);
+        opts = opts.filter((v) => childCodes.includes(v));
+      }
       if (opts.length < 2) return '';
-      return '<fieldset class="filters__group"><legend><h5>' + esc(label) + '</h5></legend>' + opts.map((v) =>
+      return '<fieldset class="filters__group"><legend><span class="filters__legend">' + esc(label) + '</span></legend>' + opts.map((v) =>
         '<label><input type="checkbox" data-key="' + k + '" value="' + esc(v) + '"> ' + esc(labelFor(k, v)) + '</label>').join('') + '</fieldset>';
     }).join('');
     const sortEl = document.querySelector('[data-sort]');
     sortEl.value = ['reco', 'popular', 'priceAsc', 'priceDesc', 'review', 'new'].includes(param('sort')) ? param('sort') : 'reco';
     let shown = 12;
+    let first = true;
     const grid = document.querySelector('[data-grid]'), countEl = document.querySelector('[data-count]');
     const moreBtn = document.querySelector('[data-more]'), activeEl = document.querySelector('[data-active]');
     function render() {
@@ -365,8 +374,9 @@ window.RARO = (function () {
       if (!base.length) {
         grid.innerHTML = '<div class="list__empty">' + (q ? '검색 결과가 없습니다. 다른 검색어로 찾아보세요.' : '준비 중인 카테고리입니다. 다른 카테고리를 둘러보세요.') + '</div>';
       } else {
-        renderCards(grid, list.slice(0, shown), { eagerFirst: true });
+        renderCards(grid, list.slice(0, shown), { eagerFirst: first });
       }
+      first = false;
       moreBtn.parentNode.style.display = list.length > shown ? '' : 'none';
       moreBtn.textContent = Math.min(12, list.length - shown) + '개 더 보기';
       activeEl.innerHTML = Object.entries(active).flatMap(([k, set]) => Array.from(set).map((v) =>
@@ -388,21 +398,43 @@ window.RARO = (function () {
       Object.keys(active).forEach((k) => active[k].clear());
       groupsEl.querySelectorAll('input').forEach((i) => { i.checked = false; });
       shown = 12; render();
+      if (sheet.classList.contains('is-open')) openSheet(false);
     });
-    sortEl.addEventListener('change', () => { shown = 12; render(); });
+    sortEl.addEventListener('change', () => {
+      shown = 12; render();
+      const u = new URL(location.href); u.searchParams.set('sort', sortEl.value);
+      history.replaceState(null, '', u);
+    });
     moreBtn.addEventListener('click', () => { shown += 12; render(); });
     /* 모바일 필터 시트 */
     const sheet = document.querySelector('[data-filters]'), backdrop = document.querySelector('[data-filters-backdrop]');
     const openBtn = document.querySelector('[data-filters-open]');
+    const focusables = () => Array.from(sheet.querySelectorAll('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+      .filter((el) => !el.disabled && el.offsetParent !== null);
     const openSheet = (o) => {
       sheet.classList.toggle('is-open', o); backdrop.classList.toggle('is-open', o);
       openBtn.setAttribute('aria-expanded', String(o));
-      if (o) { const first = sheet.querySelector('input, button'); if (first) first.focus(); } else { openBtn.focus(); }
+      if (o) {
+        sheet.setAttribute('role', 'dialog'); sheet.setAttribute('aria-modal', 'true');
+        const firstFocusable = sheet.querySelector('input, button'); if (firstFocusable) firstFocusable.focus();
+      } else {
+        sheet.removeAttribute('role'); sheet.removeAttribute('aria-modal');
+        openBtn.focus();
+      }
     };
     openBtn.addEventListener('click', () => openSheet(true));
     document.querySelectorAll('[data-filters-close]').forEach((b) => b.addEventListener('click', () => openSheet(false)));
     backdrop.addEventListener('click', () => openSheet(false));
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sheet.classList.contains('is-open')) openSheet(false); });
+    document.addEventListener('keydown', (e) => {
+      if (!sheet.classList.contains('is-open')) return;
+      if (e.key === 'Escape') { openSheet(false); return; }
+      if (e.key === 'Tab') {
+        const f = focusables(); if (!f.length) return;
+        const firstEl = f[0], lastEl = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === firstEl) { e.preventDefault(); lastEl.focus(); }
+        else if (!e.shiftKey && document.activeElement === lastEl) { e.preventDefault(); firstEl.focus(); }
+      }
+    });
     /* 구매 가이드 */
     const g = topDef ? topDef.guide : { title: '어떤 가구를 찾으세요?',
       body: '식탁은 인원과 공간 폭, 소파는 거실 폭, 침대는 매트리스 규격부터 확인하면 고르기 쉽습니다. 카테고리를 고르면 맞춤 가이드가 나옵니다.' };
@@ -539,6 +571,28 @@ window.RARO = (function () {
     const similar = data.products.filter((x) => x.no !== p.no && x.top === p.top && x.price && !series.includes(x))
       .sort((a, b) => Math.abs(a.price - p.price) - Math.abs(b.price - p.price)).slice(0, 4);
     renderCards(document.querySelector('[data-similar]'), similar);
+  };
+
+  pages.brand = function (data) {
+    const c = data.company;
+    document.querySelector('[data-meaning]').textContent = c.meaning;
+    document.querySelector('[data-slogan]').textContent = c.slogan;
+    document.querySelector('[data-statement]').textContent = c.story.join(' ');
+    document.querySelector('[data-numbers]').innerHTML = c.numbers.map((n) =>
+      '<div><b>' + esc(n.value) + '<small>' + esc(n.unit) + '</small></b><p>' + esc(n.label) + '</p></div>').join('');
+    const mats = [
+      ['012', '포세린 통 세라믹', '열과 흠집에 강한 상판. 관리 방법은 상품 상세 이미지를 확인하세요.'],
+      ['013', '고무나무 · 참죽나무 · 아카시아 원목', '자연 그대로의 결과 색. 오일 마감 제품은 오일 관리로 오래 씁니다.'],
+      ['003', '천연 가죽 · 비건 가죽 소파', '전동 리클라이너와 스윙 헤드레스트까지.'],
+    ];
+    document.querySelector('[data-materials]').innerHTML = mats.map(([code, t, b]) => {
+      const rep = data.products.find((p) => p.top === code && p.detail) || data.products.find((p) => p.top === code);
+      const src = rep ? ((rep.detail && rep.detail.gallery[1]) || rep.image) : '';
+      return '<a class="feat" href="list.html?cate=' + code + '"><div class="feat__img">' + img(src, t) + '</div><h4>' + esc(t) + '</h4><p>' + esc(b) + ' <u>' + esc(topName(code)) + ' 보기 →</u></p></a>';
+    }).join('');
+    document.querySelector('[data-showroom]').innerHTML = esc(c.showroom) + '<br>운영시간 · 주차: ' + esc(c.showroomHours) + '<br><a href="tel:' + esc(c.tel.replace(/-/g, '')) + '">' + esc(c.tel) + '</a>';
+    document.querySelector('[data-map]').innerHTML = '<strong>' + esc(c.showroom) + '</strong><span>지도는 카카오맵 연동 후 표시됩니다 (이식 시 지도 API 키 필요)</span>';
+    document.querySelector('[data-map-link]').href = 'https://map.kakao.com/link/search/' + encodeURIComponent(c.showroom);
   };
 
   /* ==== END PAGES ==== */
