@@ -164,7 +164,7 @@ window.RARO = (function () {
     return '<a class="card" href="view.html?no=' + esc(p.no) + '">'
       + '<div class="card__tile">'
       + (badge ? '<span class="card__badge' + (badge === 'NEW' ? ' card__badge--new' : '') + '">' + esc(badge) + '</span>' : '')
-      + '<img src="' + esc(p.image) + '"' + srcset + ' alt="' + esc(p.name) + '" ' + loadAttr + ' ' + IMG_ERR + '>'
+      + '<img src="' + esc(p.image) + '"' + srcset + ' alt="' + esc(p.name) + '" ' + loadAttr + ' referrerpolicy="no-referrer" ' + IMG_ERR + '>'
       + '<button class="card__wish" type="button" aria-label="찜하기" onclick="event.preventDefault();this.classList.toggle(\'is-on\')">♡</button>'
       + '</div><div class="card__body"><div class="card__name">' + esc(p.name) + '</div>'
       + '<div class="card__price">' + (rate ? '<span class="rate">' + rate + '%</span>' : '') + fmt(p.price)
@@ -178,8 +178,8 @@ window.RARO = (function () {
       : '<div class="list__empty">조건에 맞는 상품이 없습니다.</div>';
   }
   function img(src, alt, cls, eager) {
-    const loadAttr = eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
-    return '<img src="' + esc(src) + '" alt="' + esc(alt || '') + '"' + (cls ? ' class="' + esc(cls) + '"' : '') + ' ' + loadAttr + ' ' + IMG_ERR + '>';
+    const loadAttr = eager === 'low' ? 'loading="lazy" fetchpriority="low"' : eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
+    return '<img src="' + esc(src) + '" alt="' + esc(alt || '') + '"' + (cls ? ' class="' + esc(cls) + '"' : '') + ' ' + loadAttr + ' referrerpolicy="no-referrer" ' + IMG_ERR + '>';
   }
 
   /* ==== 헤더 · 푸터 ==== */
@@ -257,19 +257,30 @@ window.RARO = (function () {
     const H = data.home;
     /* 히어로 (첫 슬라이드는 LCP이므로 eager) */
     const hero = document.getElementById('hero');
-    hero.innerHTML = H.hero.map((s, i) => '<div class="hero__slide' + (i === 0 ? ' is-active' : '') + '">' + img(s.img, s.title, null, i === 0)
+    hero.innerHTML = H.hero.map((s, i) => '<div class="hero__slide' + (i === 0 ? ' is-active' : '') + '">' + img(s.img, s.title, null, i === 0 ? true : 'low')
       + '<div class="hero__shade"></div><div class="hero__text container"><h1 class="h1">' + esc(s.title) + '</h1><p>' + esc(s.sub) + '</p>'
       + '<a class="btn btn--white btn--lg" href="' + esc(s.href) + '">' + esc(s.cta) + '</a></div></div>').join('')
-      + '<div class="hero__dots">' + H.hero.map((_, i) => '<button type="button" aria-label="' + (i + 1) + '번 슬라이드"' + (i === 0 ? ' class="is-active"' : '') + '></button>').join('') + '</div>';
+      + '<div class="hero__dots">' + H.hero.map((_, i) => '<button type="button" aria-label="' + (i + 1) + '번 슬라이드" aria-current="' + (i === 0 ? 'true' : 'false') + '"' + (i === 0 ? ' class="is-active"' : '') + '></button>').join('') + '</div>';
     const slides = hero.querySelectorAll('.hero__slide'), dots = hero.querySelectorAll('.hero__dots button');
     let cur = 0, timer = null;
     const go = (n) => {
-      slides[cur].classList.remove('is-active'); dots[cur].classList.remove('is-active');
+      slides[cur].classList.remove('is-active'); dots[cur].classList.remove('is-active'); dots[cur].setAttribute('aria-current', 'false');
       cur = (n + slides.length) % slides.length;
-      slides[cur].classList.add('is-active'); dots[cur].classList.add('is-active');
+      slides[cur].classList.add('is-active'); dots[cur].classList.add('is-active'); dots[cur].setAttribute('aria-current', 'true');
+      slides.forEach((el, i) => { el.inert = (i !== cur); el.setAttribute('aria-hidden', String(i !== cur)); });
     };
-    const auto = () => { clearInterval(timer); if (slides.length > 1) timer = setInterval(() => go(cur + 1), 6000); };
+    slides.forEach((el, i) => { el.inert = (i !== cur); el.setAttribute('aria-hidden', String(i !== cur)); });
+    const auto = () => {
+      clearInterval(timer); timer = null;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (slides.length > 1) timer = setInterval(() => go(cur + 1), 6000);
+    };
     dots.forEach((d, i) => d.addEventListener('click', () => { go(i); auto(); }));
+    hero.addEventListener('mouseenter', () => clearInterval(timer));
+    hero.addEventListener('mouseleave', auto);
+    hero.addEventListener('focusin', () => clearInterval(timer));
+    hero.addEventListener('focusout', auto);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) clearInterval(timer); else auto(); });
     auto();
     /* 공간별로 둘러보기: 대분류마다 상세가 있는 대표 상품의 두 번째 갤러리 사진 */
     const repImage = (code) => {
@@ -286,16 +297,17 @@ window.RARO = (function () {
     renderCards(document.querySelector('[data-best]'), products(H.best));
     /* 브랜드 띠 */
     document.querySelector('[data-slogan]').textContent = data.company.slogan;
-    document.querySelector('[data-story]').textContent = data.company.story[0] + ' ' + data.company.story[1];
+    document.querySelector('[data-story]').textContent = data.company.story.slice(0, 2).join(' ');
     /* 새로 나온 가구: 전체 탭 = 사이트 NEW 목록, 카테고리 탭 = 해당 카테고리 최신 8개 */
     const newAll = products(H.new);
     const tabsEl = document.querySelector('[data-new-tabs]'), newEl = document.querySelector('[data-new]');
+    tabsEl.setAttribute('role', 'group'); tabsEl.setAttribute('aria-label', '카테고리별 신제품');
     const tabs = [['all', '전체']].concat(NAV.map((t) => [t.code, t.short]));
-    tabsEl.innerHTML = tabs.map(([k, n], i) => '<button type="button" class="chip' + (i === 0 ? ' is-on' : '') + '" data-tab="' + k + '">' + esc(n) + '</button>').join('');
+    tabsEl.innerHTML = tabs.map(([k, n], i) => '<button type="button" class="chip' + (i === 0 ? ' is-on' : '') + '" data-tab="' + k + '" aria-pressed="' + (i === 0 ? 'true' : 'false') + '">' + esc(n) + '</button>').join('');
     const showTab = (k) => {
       const list = k === 'all' ? newAll : sortProducts(data.products.filter((p) => p.top === k), 'new').slice(0, 8);
       renderCards(newEl, list, { badge: 'NEW' });
-      tabsEl.querySelectorAll('.chip').forEach((c) => c.classList.toggle('is-on', c.dataset.tab === k));
+      tabsEl.querySelectorAll('.chip').forEach((c) => { const on = c.dataset.tab === k; c.classList.toggle('is-on', on); c.setAttribute('aria-pressed', String(on)); });
     };
     tabsEl.addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (b) showTab(b.dataset.tab); });
     showTab('all');
@@ -397,6 +409,136 @@ window.RARO = (function () {
     document.querySelector('[data-guide-title]').textContent = g.title;
     document.querySelector('[data-guide-body]').textContent = g.body;
     render();
+  };
+
+  pages.view = function (data) {
+    const p = product(param('no')) || product(data.home.best[0]);
+    if (!p) return;
+    const d = p.detail || { gallery: [], options: [], optionLabel: '', optionLevels: 0, detailImages: [], spec: {}, shipping: '', reviewCount: p.reviewCount, qnaCount: 0 };
+    const gallery = d.gallery.length ? d.gallery : [p.imageLarge || p.image];
+    const rate = discountRate(p.price, p.listPrice);
+    const reviewCount = d.reviewCount || p.reviewCount || 0;
+    const soldOut = (p.tags || []).includes('품절');
+    document.title = p.name + ' — 라로퍼니처';
+    const el = document.querySelector('[data-pdp]');
+    const optionPrice = (o, i) => {
+      if (o.delta != null) return o.delta === 0 ? fmt(p.price) : (o.delta > 0 ? '+' : '−') + fmt(Math.abs(o.delta));
+      return i === 0 ? fmt(p.price) : '<span class="muted">옵션 선택 시 표시</span>';
+    };
+    el.innerHTML = '<div class="crumb"><a href="index.html">홈</a> › <a href="list.html?cate=' + p.top + '">' + esc(topName(p.top))
+      + '</a> › <a href="list.html?cate=' + p.cate + '">' + esc(childName(p.cate)) + '</a></div>'
+      + '<div class="gallery"><div class="gallery__main">' + img(gallery[0], p.name, null, true)
+      + (gallery.length > 1 ? '<button class="gallery__nav gallery__nav--prev" type="button" aria-label="이전 사진">‹</button><button class="gallery__nav gallery__nav--next" type="button" aria-label="다음 사진">›</button>' : '')
+      + '</div>' + (gallery.length > 1 ? '<div class="gallery__thumbs">' + gallery.slice(0, 6).map((g, i) =>
+        '<button type="button"' + (i === 0 ? ' class="is-active" aria-current="true"' : '') + ' data-i="' + i + '" aria-label="' + (i + 1) + '번 사진">' + img(g, p.name + ' ' + (i + 1)) + '</button>').join('') + '</div>' : '') + '</div>'
+      + '<div class="buy"><span class="label">' + esc(childName(p.cate)) + (p.series ? ' · ' + esc(p.series) : '') + '</span>'
+      + '<h1 class="buy__name">' + esc(p.name) + '</h1>'
+      + '<div class="buy__rating">리뷰 ' + reviewCount + ' · Q&amp;A ' + (d.qnaCount || 0) + (soldOut ? ' · <b>품절</b>' : '') + '</div>'
+      + '<div class="buy__price">' + (rate ? '<span class="rate">' + rate + '%</span>' : '') + fmt(p.price) + (p.listPrice ? '<del>' + fmt(p.listPrice) + '</del>' : '') + '</div>'
+      + '<div class="buy__ship">' + (d.shipping ? '배송비 ' + esc(d.shipping) : '배송비는 옵션 선택 후 표시됩니다') + '</div>'
+      + (d.options.length ? '<span class="label">' + esc(d.optionLabel || '구성 선택') + '</span><div data-options role="radiogroup" aria-label="' + esc(d.optionLabel || '구성 선택') + '">' + d.options.map((o, i) =>
+        '<div class="opt' + (i === 0 ? ' is-on' : '') + '" data-i="' + i + '" role="radio" aria-checked="' + (i === 0) + '" tabindex="0"><span>' + esc(o.name) + '</span><b>' + optionPrice(o, i) + '</b></div>').join('') + '</div>'
+        + (d.optionLevels > 1 ? '<p class="muted" style="font-size:12px;margin-top:6px">색상 등 추가 옵션은 실제 사이트에서 다음 단계로 선택합니다. (확인 필요)</p>' : '') : '')
+      + (p.colors && p.colors.length ? '<span class="label">색상</span><div class="swatches" role="radiogroup" aria-label="색상">' + p.colors.map((c, i) =>
+        '<button type="button" class="swatch' + (i === 0 ? ' is-on' : '') + '" role="radio" aria-checked="' + (i === 0) + '" style="background:' + esc(c.hex) + '" title="' + esc(c.name) + '" aria-label="' + esc(c.name) + '"></button>').join('') + '</div>' : '')
+      + '<div class="buy__qty"><span>수량</span><div class="qty"><button type="button" data-qty="-1" aria-label="수량 줄이기">−</button><span data-qty-val aria-live="polite">1</span><button type="button" data-qty="1" aria-label="수량 늘리기">+</button></div></div>'
+      + '<div class="buy__total"><span>총 상품 금액</span><b data-total aria-live="polite">' + fmt(p.price) + '</b></div>'
+      + '<div class="buy__actions"><a class="btn btn--secondary" href="#">장바구니</a><a class="btn btn--primary" href="#">' + (soldOut ? '재입고 알림 받기' : '바로 구매') + '</a>'
+      + '<button class="btn btn--secondary btn--icon" type="button" aria-label="찜하기" aria-pressed="false" onclick="const on=this.getAttribute(\'aria-pressed\')!==\'true\';this.setAttribute(\'aria-pressed\',on);this.textContent=on?\'♥\':\'♡\'">♡</button></div>'
+      + '<div class="buy__notes">✓ 일산 쇼룸에서 실물을 확인할 수 있습니다 <a href="brand.html#showroom">쇼룸 안내</a><br>✓ 카카오톡 상담 · ' + esc(data.company.tel)
+      + '<br>✓ 교환 · 반품 기준은 이용안내를 따릅니다</div></div>';
+    /* 갤러리 */
+    let gi = 0;
+    const main = el.querySelector('.gallery__main img'), thumbs = el.querySelectorAll('.gallery__thumbs button');
+    const show = (i) => {
+      gi = (i + gallery.length) % gallery.length;
+      if (main) main.src = gallery[gi];
+      thumbs.forEach((t) => { const on = Number(t.dataset.i) === gi; t.classList.toggle('is-active', on); if (on) t.setAttribute('aria-current', 'true'); else t.removeAttribute('aria-current'); });
+    };
+    thumbs.forEach((t) => t.addEventListener('click', () => show(Number(t.dataset.i))));
+    const prev = el.querySelector('.gallery__nav--prev'), next = el.querySelector('.gallery__nav--next');
+    if (prev) prev.addEventListener('click', () => show(gi - 1));
+    if (next) next.addEventListener('click', () => show(gi + 1));
+    /* 옵션 · 수량 · 총액 */
+    let oi = 0, qty = 1;
+    const buybar = document.querySelector('[data-buybar]');
+    document.body.classList.add('has-buybar');
+    buybar.innerHTML = '<div><div class="muted" style="font-size:12px">총 상품 금액</div><b>' + fmt(p.price) + '</b></div><a class="btn btn--primary" href="#">' + (soldOut ? '재입고 알림' : '구매하기') + '</a>';
+    const total = () => {
+      const delta = d.options[oi] ? d.options[oi].delta : 0;
+      const t = fmt(optionTotal(p.price || 0, delta, qty));
+      el.querySelector('[data-total]').textContent = t;
+      buybar.querySelector('b').textContent = t;
+    };
+    const optsEl = el.querySelector('[data-options]');
+    const selectOpt = (o) => {
+      oi = Number(o.dataset.i);
+      optsEl.querySelectorAll('.opt').forEach((x) => { x.classList.toggle('is-on', x === o); x.setAttribute('aria-checked', String(x === o)); });
+      total();
+    };
+    if (optsEl) {
+      optsEl.addEventListener('click', (e) => { const o = e.target.closest('.opt'); if (o) selectOpt(o); });
+      optsEl.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key === 'Enter') { const o = e.target.closest('.opt'); if (o) { e.preventDefault(); selectOpt(o); } } });
+    }
+    el.querySelectorAll('[data-qty]').forEach((b) => b.addEventListener('click', () => {
+      qty = Math.max(1, qty + Number(b.dataset.qty)); el.querySelector('[data-qty-val]').textContent = qty; total();
+    }));
+    const sw = el.querySelector('.swatches');
+    if (sw) sw.addEventListener('click', (e) => { const s = e.target.closest('.swatch'); if (!s) return; sw.querySelectorAll('.swatch').forEach((x) => { x.classList.toggle('is-on', x === s); x.setAttribute('aria-checked', String(x === s)); }); });
+    /* 탭 카운트 + 스크롤 스파이 */
+    document.querySelector('[data-rc]').textContent = reviewCount;
+    document.querySelector('[data-qc]').textContent = d.qnaCount || 0;
+    const tabLinks = Array.from(document.querySelectorAll('[data-ptabs] a'));
+    const secs = tabLinks.map((a) => document.querySelector(a.getAttribute('href')));
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (ticking) return; ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY + 180; let idx = 0;
+        secs.forEach((s, i) => { if (s && s.offsetTop <= y) idx = i; });
+        tabLinks.forEach((a, i) => { a.classList.toggle('is-active', i === idx); if (i === idx) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
+        ticking = false;
+      });
+    }, { passive: true });
+    /* 핵심 특징: 카테고리 기본 문구 (categories[].features) */
+    const feats = ((cateDef(data, p.top) || {}).features) || [];
+    document.querySelector('[data-feats]').innerHTML = feats.map((f, i) => '<div class="feat"><div class="feat__img">'
+      + img(gallery[Math.min(i + 1, gallery.length - 1)], f.title) + '</div><h4>' + esc(f.title) + '</h4><p>' + esc(f.body) + '</p></div>').join('');
+    /* 상세 이미지 */
+    const di = document.querySelector('[data-detail-imgs]'), dbtn = document.querySelector('[data-detail-btn]');
+    if (d.detailImages.length) {
+      di.innerHTML = d.detailImages.map((s) => img(s, p.name + ' 상세')).join('') + '<div class="detail-imgs__fade"></div>';
+      dbtn.innerHTML = '<button class="btn btn--secondary" type="button" aria-expanded="false">상세 이미지 펼쳐 보기</button>';
+      dbtn.querySelector('button').addEventListener('click', function () { const open = di.classList.toggle('is-open'); this.setAttribute('aria-expanded', String(open)); this.textContent = open ? '접기' : '상세 이미지 펼쳐 보기'; });
+    } else {
+      di.innerHTML = '<div class="notice">이 상품의 상세 이미지는 실제 사이트 상품 페이지에서 확인할 수 있습니다. (프로토타입은 대표 상품 18개만 상세를 수집)</div>';
+      di.classList.add('is-open');
+    }
+    /* 사양 · 치수: 값이 있는 항목만 */
+    const rows = {};
+    if (p.size) rows['사이즈'] = (p.sizes && p.sizes.length > 1 ? p.sizes.join(' / ') : p.size) + (p.seats ? ' · ' + p.seats + '인' : '');
+    if (p.material) rows['소재'] = p.material;
+    if (p.shape) rows['형태'] = p.shape;
+    if (p.kind) rows['구성'] = p.kind;
+    if (p.colors && p.colors.length) rows['색상'] = p.colors.map((c) => c.name).join(', ');
+    Object.assign(rows, d.spec);
+    document.querySelector('[data-spec]').innerHTML = '<div class="spec__figure">치수 도면 (' + (p.size ? 'W' + p.size + ' — 확인 필요' : '상세 이미지 참조') + ')</div>'
+      + '<table><tbody>' + Object.entries(rows).map(([k, v]) => '<tr><th scope="row">' + esc(k) + '</th><td>' + esc(v) + '</td></tr>').join('') + '</tbody></table>';
+    document.querySelector('[data-ship-text]').textContent = d.shipping ? '배송비 ' + d.shipping : '배송비는 옵션 선택 후 표시됩니다.';
+    document.querySelector('[data-as-text]').textContent = d.spec['AS 책임자와 전화번호'] || ('라로퍼니처 고객센터 ' + data.company.tel);
+    /* 리뷰 요약: 별점 집계는 사이트에 없으므로 개수만 */
+    const mine = data.home.reviews.filter((r) => r.goodsNo === p.no);
+    document.querySelector('[data-rsum]').innerHTML = '<div><div class="rsum__score">' + reviewCount + '<small style="font-size:16px"> 개</small></div>'
+      + '<div class="rsum__stars">' + (reviewCount ? stars(5) : '') + '</div><div class="muted" style="font-size:13px;margin-top:6px">별점 평균과 분포는 실제 사이트 리뷰 게시판 연동 시 표시됩니다. (확인 필요)</div></div>'
+      + '<div class="rsum__photos">' + mine.map((r) => '<div class="review"><div class="review__img">' + img(r.img, '후기 사진') + '</div><p class="review__text">' + esc(r.text) + '</p></div>').join('')
+      + Array.from({ length: Math.max(0, 4 - mine.length) }).map(() => '<div class="ph">사진 후기</div>').join('') + '</div>';
+    /* 함께 보기 */
+    const series = data.products.filter((x) => x.no !== p.no && x.series && x.series === p.series).slice(0, 4);
+    document.querySelector('[data-series-title]').textContent = series.length ? p.series + ' 시리즈 함께 보기' : '같은 카테고리 인기 상품';
+    renderCards(document.querySelector('[data-series]'), series.length ? series : sortProducts(data.products.filter((x) => inCate(x, p.cate) && x.no !== p.no), 'popular').slice(0, 4));
+    const similar = data.products.filter((x) => x.no !== p.no && x.top === p.top && x.price && !series.includes(x))
+      .sort((a, b) => Math.abs(a.price - p.price) - Math.abs(b.price - p.price)).slice(0, 4);
+    renderCards(document.querySelector('[data-similar]'), similar);
   };
 
   /* ==== END PAGES ==== */

@@ -75,6 +75,7 @@ del { text-decoration: line-through; }
 .btn--lg { height: 52px; padding: 0 28px; font-size: 15px; }
 .btn--block { width: 100%; }
 .btn--icon { width: 44px; padding: 0; }
+.hero__dots button:focus-visible, .chip:focus-visible, .btn:focus-visible, .card:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .chips { display: flex; gap: 8px; flex-wrap: wrap; }
 .chip { display: inline-flex; align-items: center; height: 34px; padding: 0 14px; border-radius: var(--radius-pill);
         border: 1px solid var(--line); background: #fff; font-size: 13px; color: var(--ink-2); }
@@ -143,7 +144,7 @@ del { text-decoration: line-through; }
 .card__tile { position: relative; aspect-ratio: 1 / 1; background: var(--tile); border-radius: var(--radius-sm); overflow: hidden; }
 .card__tile img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
 .card:hover .card__tile img { transform: scale(1.03); }
-.card__tile.is-broken::after { content: "이미지 준비 중"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--ink-3); font-size: 12px; }
+.is-broken::after { content: "이미지 준비 중"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--ink-3); font-size: 12px; }
 .card__badge { position: absolute; left: 10px; top: 10px; z-index: 1; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700;
                padding: 3px 9px; border-radius: var(--radius-pill); letter-spacing: .02em; }
 .card__badge--new { background: var(--ink); }
@@ -162,8 +163,8 @@ del { text-decoration: line-through; }
 
 /* ---------- 8. 메인 섹션 ---------- */
 .hero { position: relative; height: clamp(440px, 62vh, 700px); overflow: hidden; background: var(--tile); }
-.hero__slide { position: absolute; inset: 0; opacity: 0; transition: opacity .7s ease; }
-.hero__slide.is-active { opacity: 1; }
+.hero__slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .7s ease, visibility 0s .7s; }
+.hero__slide.is-active { opacity: 1; visibility: visible; transition-delay: 0s; }
 .hero__slide img { width: 100%; height: 100%; object-fit: cover; }
 .hero__shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.08) 55%, rgba(0,0,0,0) 100%); }
 .hero__text { position: absolute; left: 0; right: 0; top: 17%; text-align: center; color: #fff; padding: 0 var(--gutter); }
@@ -175,7 +176,7 @@ del { text-decoration: line-through; }
 .weekly__note { color: var(--accent); font-size: 14px; font-weight: 600; margin-left: 8px; }
 .band { background: var(--cream); margin-top: var(--section); padding: 72px 0; }
 .band__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
-.band__img { aspect-ratio: 16 / 10; border-radius: var(--radius-sm); overflow: hidden; background: var(--tile); }
+.band__img { position: relative; aspect-ratio: 16 / 10; border-radius: var(--radius-sm); overflow: hidden; background: var(--tile); }
 .band__img img { width: 100%; height: 100%; object-fit: cover; }
 .band__actions { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
 .band p.sub { margin-top: 12px; line-height: 1.7; }
@@ -184,12 +185,12 @@ del { text-decoration: line-through; }
 .space__big { position: relative; aspect-ratio: 4 / 3; background: var(--tile); border-radius: var(--radius-sm); overflow: hidden; }
 .space__big img { width: 100%; height: 100%; object-fit: cover; }
 .space__big figcaption { position: absolute; left: 16px; bottom: 16px; background: rgba(255,255,255,.92); border-radius: var(--radius-pill); padding: 6px 14px; font-size: 13px; }
-.review__img { aspect-ratio: 1 / 1; background: var(--tile); border-radius: var(--radius-sm); overflow: hidden; }
+.review__img { position: relative; aspect-ratio: 1 / 1; background: var(--tile); border-radius: var(--radius-sm); overflow: hidden; }
 .review__img img { width: 100%; height: 100%; object-fit: cover; }
 .review__stars { color: var(--accent); font-size: 12px; letter-spacing: 1px; margin-top: 10px; }
 .review__text { font-size: 14px; color: var(--ink-2); margin-top: 4px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .review__meta { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
-.review__goods { font-size: 12px; margin-top: 4px; text-decoration: underline; text-underline-offset: 2px; }
+.review__goods { font-size: 12px; margin-top: 4px; text-decoration: underline; text-underline-offset: 2px; display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ---------- 9. 상품 목록 ---------- */
 .list__head { padding-top: 40px; }
@@ -262,7 +263,7 @@ del { text-decoration: line-through; }
 .ptabs a { display: block; padding: 14px 0; font-size: 14px; font-weight: 600; color: var(--ink-2); border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
 .ptabs a.is-active { color: var(--ink); border-color: var(--ink); }
 .feats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-.feat__img { aspect-ratio: 4 / 3; background: var(--tile); border-radius: var(--radius-sm); overflow: hidden; }
+.feat__img { position: relative; aspect-ratio: 4 / 3; background: var(--tile); border-radius: var(--radius-sm); overflow: hidden; }
 .feat__img img { width: 100%; height: 100%; object-fit: cover; }
 .feat h4 { font-size: 16px; margin-top: 12px; }
 .feat p { font-size: 14px; color: var(--ink-2); margin-top: 4px; line-height: 1.6; }
@@ -391,4 +392,9 @@ body.has-buybar .chat-fab { bottom: 84px; }   /* 하단 구매 바와 겹치지 
   .ftr { padding: 40px 0 24px; }
   .ftr__grid { grid-template-columns: 1fr; gap: 20px; }
   .hide-m { display: none !important; } .show-m { display: block !important; }
+}
+
+/* ---------- 15. 동작 감소 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; scroll-behavior: auto !important; }
 }
