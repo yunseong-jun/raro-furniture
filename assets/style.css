@@ -330,7 +330,7 @@ body.has-buybar .chat-fab { bottom: 84px; }   /* 하단 구매 바와 겹치지 
 
 /* ---------- 14. 반응형 ---------- */
 @media (max-width: 1024px) {
-  :root { --header-h: 105px; }
+  :root { --header-h: 113px; }   /* 1024px에서는 헤더 높이가 그대로 */
   .grid--4, .grid--5 { grid-template-columns: repeat(3, 1fr); }
   .scroll-row { grid-auto-columns: calc((100% - 2 * 20px) / 3); }
   .hdr__util a span { display: none; }
