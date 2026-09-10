@@ -482,7 +482,7 @@ window.RARO = (function () {
       + '<div class="buy__ship">' + (d.shipping ? '배송비 ' + esc(d.shipping) : '배송비는 옵션 선택 후 표시됩니다') + '</div>'
       + (d.options.length ? '<span class="label">' + esc(d.optionLabel || '구성 선택') + '</span><div data-options role="radiogroup" aria-label="' + esc(d.optionLabel || '구성 선택') + '">' + d.options.map((o, i) =>
         '<div class="opt' + (i === oi ? ' is-on' : '') + '" data-i="' + i + '" role="radio" aria-checked="' + (i === oi) + '" tabindex="' + (i === oi ? '0' : '-1') + '"><span>' + esc(o.name) + '</span><b>' + optionPrice(o, i) + '</b></div>').join('') + '</div>'
-        + (d.optionLevels > 1 ? '<p class="muted" style="font-size:12px;margin-top:6px">색상 등 추가 옵션은 실제 사이트에서 다음 단계로 선택합니다. (확인 필요)</p>' : '') : '')
+        + (d.optionLevels > 1 ? '<p class="muted" style="font-size:12px;margin-top:6px">색상 등 추가 옵션은 실제 사이트에서 다음 단계로 선택합니다. (실제 사이트 연동 시 표시)</p>' : '') : '')
       + (p.colors && p.colors.length ? '<span class="label">색상</span><div class="swatches" role="radiogroup" aria-label="색상">' + p.colors.map((c, i) =>
         '<button type="button" class="swatch' + (i === 0 ? ' is-on' : '') + '" role="radio" aria-checked="' + (i === 0) + '" tabindex="' + (i === 0 ? '0' : '-1') + '" style="background:' + esc(c.hex) + '" title="' + esc(c.name) + '" aria-label="' + esc(c.name) + '"></button>').join('') + '</div>' : '')
       + '<div class="buy__qty"><span>수량</span><div class="qty"><button type="button" data-qty="-1" aria-label="수량 줄이기">−</button><span data-qty-val aria-live="polite">1</span><button type="button" data-qty="1" aria-label="수량 늘리기">+</button></div></div>'
@@ -618,7 +618,7 @@ window.RARO = (function () {
     /* 리뷰 요약: 별점 집계는 사이트에 없으므로 개수만 */
     const mine = data.home.reviews.filter((r) => r.goodsNo === p.no);
     document.querySelector('[data-rsum]').innerHTML = '<div><div class="rsum__score">' + reviewCount + '<small style="font-size:16px"> 개</small></div>'
-      + '<div class="muted" style="font-size:13px;margin-top:6px">별점 평균과 분포는 실제 사이트 리뷰 게시판 연동 시 표시됩니다. (확인 필요)</div></div>'
+      + '<div class="muted" style="font-size:13px;margin-top:6px">별점 평균과 분포는 실제 사이트 리뷰 게시판 연동 시 표시됩니다. (실제 사이트 연동 시 표시)</div></div>'
       + '<div class="rsum__photos">' + mine.map((r) => '<div class="review"><div class="review__img">' + img(r.img, '후기 사진') + '</div><p class="review__text">' + esc(r.text) + '</p></div>').join('')
       + Array.from({ length: Math.max(0, 4 - mine.length) }).map(() => '<div class="ph">사진 후기</div>').join('') + '</div>';
     /* 함께 보기 */
@@ -651,7 +651,7 @@ window.RARO = (function () {
       const src = rep ? ((rep.detail && rep.detail.gallery[1]) || rep.image) : '';
       return '<a class="feat" href="list.html?cate=' + code + '"><div class="feat__img">' + img(src, t) + '</div><h4>' + esc(t) + '</h4><p>' + esc(b) + ' <u>' + esc(topName(code)) + ' 보기 →</u></p></a>';
     }).join('');
-    document.querySelector('[data-showroom]').innerHTML = esc(c.showroom) + '<br>운영시간 · 주차: ' + esc(c.showroomHours) + '<br><a href="tel:' + esc(c.tel.replace(/-/g, '')) + '">' + esc(c.tel) + '</a>';
+    document.querySelector('[data-showroom]').innerHTML = esc(c.showroom) + '<br>운영시간 · 주차 안내는 매장으로 문의해 주세요.<br><a href="tel:' + esc(c.tel.replace(/-/g, '')) + '">' + esc(c.tel) + '</a>';
     document.querySelector('[data-map]').innerHTML = '<strong>' + esc(c.showroom) + '</strong><span>지도는 카카오맵 연동 후 표시됩니다 (이식 시 지도 API 키 필요)</span>';
     document.querySelector('[data-map-link]').href = 'https://map.kakao.com/link/search/' + encodeURIComponent(c.showroom);
   };

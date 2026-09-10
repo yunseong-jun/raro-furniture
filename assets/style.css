@@ -298,8 +298,9 @@ body.has-buybar .chat-fab { bottom: 84px; }   /* 하단 구매 바와 겹치지 
 
 /* ---------- 11. 브랜드 ---------- */
 .bhero { position: relative; height: 440px; overflow: hidden; background: #2E2C2A; }
-.bhero img { width: 100%; height: 100%; object-fit: cover; opacity: .7; }
-.bhero__text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff; padding: 0 var(--gutter); }
+.bhero img { width: 100%; height: 100%; object-fit: cover; opacity: .85; }
+.bhero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(0,0,0,.25), rgba(0,0,0,.55)); z-index: 1; }
+.bhero__text { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #fff; padding: 0 var(--gutter); }
 .bhero__text .label { color: #D6D2CB; margin-bottom: 12px; }
 .bhero__text .h1 { color: #fff; }
 .statement { max-width: 760px; margin: 0 auto; text-align: center; font-size: 22px; line-height: 1.7; font-weight: 500; }
