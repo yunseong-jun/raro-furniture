@@ -128,8 +128,10 @@ def list_page_warnings(code: str, page: str, items: list) -> list:
     expected = len(set(re.findall(r'data-goods-no="(\d+)"', page)))
     if len(items) > distinct_items:
         return [f"  참고: {code} 중복 노출 {len(items) - distinct_items}건"]
-    if distinct_items != expected:
+    if distinct_items < expected:
         return [f"  경고: {code} 목록 {distinct_items}/{expected}개만 파싱됨"]
+    if distinct_items > expected:
+        return [f"  참고: {code} 품절 등으로 data-goods-no 없는 상품 {distinct_items - expected}건 복구"]
     return []
 
 
