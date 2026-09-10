@@ -5,7 +5,7 @@
     PYTHONIOENCODING=utf-8 python data/build.py            # 캐시 없는 페이지만 요청 후 생성
     PYTHONIOENCODING=utf-8 python data/build.py --offline  # data/raw/ 캐시만 사용 (네트워크 없음)
 
-요청은 브라우저 UA로 1초 간격, 총 35건 안팎. 결과 HTML은 data/raw/에 캐시한다.
+요청은 브라우저 UA로 1초 간격, 총 32건 안팎. 결과 HTML은 data/raw/에 캐시한다.
 """
 import html as html_lib
 import json
@@ -46,12 +46,13 @@ def to_int(s):
 def parse_list(page: str) -> list:
     """goods_list.php 페이지에서 상품 목록을 뽑는다."""
     items = []
-    for block in re.findall(r'<div class="item_cont">.*?</li>', page, re.S):
+    for block in re.findall(r'<div class="item_cont"[^>]*>(?:(?!<div class="item_cont").)*', page, re.S):
         no = re.search(r'data-goods-no="(\d+)"', block)
         name = re.search(r'<strong class="item_name">(.*?)</strong>', block, re.S)
         if not (no and name):
             continue
         img = re.search(r'data-image-main\s*=\s*"([^"]+)"', block)
+        img_large = re.search(r'data-image-detail\s*=\s*"([^"]+)"', block)
         dc = re.search(r'<div class="dcPrice" custom="([\d.]+)" price="([\d.]+)"', block)
         price = to_int(dc.group(2)) if dc else to_int(
             (re.search(r'data-goods-price="([\d.]+)"', block) or [None, None])[1])
@@ -69,6 +70,7 @@ def parse_list(page: str) -> list:
             "no": no.group(1),
             "name": clean(name.group(1)),
             "image": img.group(1) if img else "",
+            "imageLarge": img_large.group(1) if img_large else "",
             "price": price,
             "listPrice": list_price,
             "reviewCount": int(rc.group(1)) if rc else 0,
@@ -87,8 +89,8 @@ def parse_detail(page: str) -> dict:
     name = re.search(r'<div class="item_detail_tit">\s*<h3>(.*?)</h3>', page, re.S)
     price = re.search(r'name="set_goods_price" value="([\d.]+)"', page)
     fixed = re.search(r'name="set_goods_fixedPrice" value="([\d.]+)"', page)
-    ship = re.search(r'<dl class="item_delivery">.*?<dd>(.*?)</dd>', page, re.S)
-    gallery = re.findall(r'detailKeyID\[\d+\]\s*=\s*"<img src=\\"([^"\\]+)\\"', page)
+    ship = re.search(r'<dl class="item_delivery">.*?<dd>(.*?)(?:<span class="btn_layer"|</dd>)', page, re.S)
+    gallery = re.findall(r'detailKeyID\[\d+\]\s*=\s*"<img\s+src=\\"([^"\\]+)\\"', page)
     options = []
     sel = re.search(r'<select name="optionNo_0"[^>]*>(.*?)</select>', page, re.S)
     if sel:
@@ -161,7 +163,7 @@ def derive(name: str, top: str) -> dict:
     series = tokens[0] if tokens else ""
     sizes = [int(x) for x in re.findall(r"(?<![\d.])(\d{3,4})(?![\d.])", name) if 500 <= int(x) <= 2400]
     size = sizes[0] if sizes else None
-    seats_m = re.search(r"(\d)인(?!용)", name)
+    seats_m = re.search(r"(?<!\d)(\d)인(?!용)", name)
     seats = int(seats_m.group(1)) if seats_m else None
     if "원형" in name:
         shape = "원형"
@@ -195,11 +197,13 @@ def derive(name: str, top: str) -> dict:
         kind = "단품"
     else:
         kind = None
-    return {"series": series, "size": size, "seats": seats, "shape": shape,
+    return {"series": series, "size": size, "sizes": sizes, "seats": seats, "shape": shape,
             "material": material, "kind": kind}
 
 
-def price_band(price: int) -> str:
+def price_band(price):
+    if price is None:
+        return None
     if price <= 300000:
         return "30만원 이하"
     if price <= 500000:

@@ -12,7 +12,7 @@ LIST_HTML = """
 <div class="item_tit_box"><a href="../goods/goods_view.php?goodsNo=1000000107"><strong class="item_name">클래시 1400 포세린 통 세라믹 4인 식탁 세트</strong></a></div>
 <div class="item_money_box"><strong class="item_price"><div class="dcPrice" custom="300000.00" price="178000.00"></div><span style="">178,000원 </span></strong></div>
 <div class="item_review_cnt">REVIEW : 47</div>
-<div class="item_icon_box"><img src="https://cdn/data/icon/goods_icon/free_delivery.gif" alt="엠플샵아이콘" /></div>
+<div class="item_icon_box"><img src="https://cdn-saas-web-116-148.cdn-nhncommerce.com/furnius9462_godomall_com/data/icon/goods_icon/free_delivery.gif" alt="무료배송" /><img src="https://cdn-saas-web-116-148.cdn-nhncommerce.com/furnius9462_godomall_com/data/icon/goods_icon/ico_pastel_02.png" alt="엠플샵아이콘" /></div>
 </div></div></li>
 <li style="width:25%;"> <div class="item_cont">
 <div class="item_photo_box" data-image-main = "https://furnius.hgodo.com/img/thumbnail/1000000111_400.jpg">
@@ -21,6 +21,15 @@ LIST_HTML = """
 <div class="item_money_box"><strong class="item_price"><div class="dcPrice" custom="64000.00" price="64000.00"></div><span>64,000원</span></strong></div>
 <div class="item_review_cnt">REVIEW : 0</div>
 </div></li>
+<li style="width:25%;"> <div class="item_cont" style="text-align:center;">
+<div class="item_photo_box" data-image-main = "https://furnius.hgodo.com/img/thumbnail/1000000200_400.jpg">
+<a href="../goods/goods_view.php?goodsNo=1000000200"><img src="https://furnius.hgodo.com/img/thumbnail/1000000200_400.jpg" /></a>
+<div class="item_link"><button type="button" class="btn_basket_get" data-goods-no="1000000200" data-goods-nm="모카 방석 원목 식탁 의자" data-goods-price="99000.00"><span>WISH</span></button></div></div>
+<div class="item_info_cont">
+<div class="item_tit_box"><strong class="item_name">모카 방석 원목 식탁 의자</strong></div>
+<div class="item_money_box"><strong class="item_price"><span>99,000원</span></strong></div>
+<div class="item_review_cnt">REVIEW : 5</div>
+</div></div></li>
 """
 
 DETAIL_HTML = """
@@ -28,8 +37,8 @@ DETAIL_HTML = """
 <input type="hidden" id="set_goods_fixedPrice" name="set_goods_fixedPrice" value="500000.00" />
 <div class="item_detail_tit"> <h3>허그 1400 포세린 통 세라믹 4인 식탁 세트</h3> </div>
 <dl class="item_price"><dt>판매가</dt><dd><strong><strong>398,000</strong></strong>원</dd></dl>
-<dl class="item_delivery"><dt>배송비</dt><dd><strong>40,000원</strong> / 상품수령시결제(착불)</dd></dl>
-<script>detailKeyID[0] = "<img src=\\"https://furnius.hgodo.com/img/thumbnail/1000000491_1000_1.jpg\\" width=\\"600\\" />"; detailKeyID[1] = "<img src=\\"https://furnius.hgodo.com/img/thumbnail/1000000491_1000_2.jpg\\" />";</script>
+<dl class="item_delivery"><dt>배송비</dt><dd><strong>40,000원</strong> / 상품수령시결제(착불) <span class="btn_layer"><a href="#lyDelivery">조건별배송</a></span><div id="lyDelivery">긴 표 내용 긴 표 내용 긴 표 내용</div></dd></dl>
+<script>detailKeyID[0] = "<img  src=\\"https://furnius.hgodo.com/img/thumbnail/1000000491_1000_1.jpg\\" width=\\"600\\" />"; detailKeyID[1] = "<img  src=\\"https://furnius.hgodo.com/img/thumbnail/1000000491_1000_2.jpg\\" />";</script>
 <select name="optionNo_0" class="chosen-select"><option value=""> = 구성 선택 = </option><option value="1">식탁+의자2+벤치1</option><option value="2">식탁+의자4</option><option value="3">식탁 단품</option></select>
 <select name="optionNo_1"><option value=""> = 구성을 먼저 선택해 주세요 = </option></select>
 <img src="https://furnius.hgodo.com/img/banner/top_banner_01.jpg" />
@@ -58,9 +67,9 @@ REVIEW_HTML = """
 
 
 class ParseListTest(unittest.TestCase):
-    def test_parses_two_items(self):
+    def test_parses_three_items(self):
         items = build.parse_list(LIST_HTML)
-        self.assertEqual([i["no"] for i in items], ["1000000107", "1000000111"])
+        self.assertEqual([i["no"] for i in items], ["1000000107", "1000000111", "1000000200"])
 
     def test_first_item_fields(self):
         p = build.parse_list(LIST_HTML)[0]
@@ -78,6 +87,21 @@ class ParseListTest(unittest.TestCase):
         self.assertIsNone(p["listPrice"])
         self.assertEqual(p["colors"], [])
         self.assertEqual(p["tags"], [])
+
+    def test_third_item_variant_and_fallback_price(self):
+        p = build.parse_list(LIST_HTML)[2]
+        self.assertEqual(p["no"], "1000000200")
+        self.assertEqual(p["price"], 99000)
+        self.assertIsNone(p["listPrice"])
+
+    def test_image_large_field(self):
+        items = build.parse_list(LIST_HTML)
+        self.assertEqual(items[0]["imageLarge"],
+                          "https://furnius.hgodo.com/img/thumbnail/1000000107_1000_1.jpg")
+        self.assertEqual(items[1]["imageLarge"], "")
+
+    def test_empty_input_returns_empty_list(self):
+        self.assertEqual(build.parse_list(""), [])
 
 
 class ParseDetailTest(unittest.TestCase):
@@ -99,6 +123,13 @@ class ParseDetailTest(unittest.TestCase):
         self.assertEqual(d["reviewCount"], 12)
         self.assertEqual(d["qnaCount"], 3)
 
+    def test_empty_input_is_safe(self):
+        d = build.parse_detail("")
+        self.assertEqual(d["gallery"], [])
+        self.assertEqual(d["options"], [])
+        self.assertEqual(d["spec"], {})
+        self.assertIsNone(d["price"])
+
 
 class ParseReviewsTest(unittest.TestCase):
     def test_reviews(self):
@@ -117,12 +148,13 @@ class ParseReviewsTest(unittest.TestCase):
 class DeriveTest(unittest.TestCase):
     def test_ceramic_set(self):
         a = build.derive("허그 1400 포세린 통 세라믹 4인 식탁 세트", "012")
-        self.assertEqual(a, {"series": "허그", "size": 1400, "seats": 4, "shape": "사각",
+        self.assertEqual(a, {"series": "허그", "size": 1400, "sizes": [1400], "seats": 4, "shape": "사각",
                              "material": "무광 세라믹", "kind": "세트"})
 
     def test_round_gloss_single(self):
         a = build.derive("에버 유광 600/800 원형 포세린 통 세라믹 침실 테라스 테이블", "012")
         self.assertEqual(a["size"], 600)
+        self.assertEqual(a["sizes"], [600, 800])
         self.assertEqual(a["shape"], "원형")
         self.assertEqual(a["material"], "유광 세라믹")
         self.assertEqual(a["kind"], "단품")
@@ -153,6 +185,7 @@ class PriceBandTest(unittest.TestCase):
         self.assertEqual(build.price_band(300000), "30만원 이하")
         self.assertEqual(build.price_band(398000), "30–50만원")
         self.assertEqual(build.price_band(689000), "50만원 이상")
+        self.assertIsNone(build.price_band(None))
 
 
 if __name__ == "__main__":
