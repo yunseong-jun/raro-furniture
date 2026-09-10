@@ -216,7 +216,7 @@ window.RARO = (function () {
       + '<div><div class="ftr__logo"><img src="assets/logo-header.png" alt="라로퍼니처"></div>'
       + '<div class="ftr__company">' + esc(c.name) + ' · 대표 ' + esc(c.ceo) + '<br>' + esc(c.address) + '<br>사업자등록번호 ' + esc(c.bizNo)
       + '<br>통신판매업신고 ' + esc(c.mailOrderNo) + '<br>개인정보관리자 ' + esc(c.privacyOfficer) + '</div></div>'
-      + '<div><h4>고객센터</h4><div class="ftr__tel">' + esc(c.tel) + '</div><ul class="mt-8"><li>평일 09:00–18:00 (확인 필요)</li><li>' + esc(c.email) + '</li>'
+      + '<div><h4>고객센터</h4><div class="ftr__tel">' + esc(c.tel) + '</div><ul class="mt-8"><li>운영시간은 전화로 문의해 주세요</li><li>' + esc(c.email) + '</li>'
       + '<li><a href="#">카카오톡 상담</a></li><li><a href="#">네이버톡톡</a></li></ul></div>'
       + '<div><h4>쇼핑 안내</h4><ul><li><a href="#">이용안내</a></li><li><a href="#">배송 · 설치</a></li><li><a href="#">교환 · 반품</a></li><li><a href="#">이벤트</a></li><li><a href="index.html#space">리뷰</a></li></ul></div>'
       + '<div><h4>회사</h4><ul><li><a href="brand.html">브랜드 스토리</a></li><li><a href="brand.html#showroom">일산 쇼룸</a></li><li><a href="#">이용약관</a></li><li><a href="#">개인정보처리방침</a></li></ul></div>'
@@ -577,11 +577,13 @@ window.RARO = (function () {
     document.querySelector('[data-qc]').textContent = d.qnaCount || 0;
     const tabLinks = Array.from(document.querySelectorAll('[data-ptabs] a'));
     const secs = tabLinks.map((a) => document.querySelector(a.getAttribute('href')));
+    let headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h'));
+    window.addEventListener('resize', () => { headerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')); }, { passive: true });
     let ticking = false;
     window.addEventListener('scroll', () => {
       if (ticking) return; ticking = true;
       requestAnimationFrame(() => {
-        const headerOffset = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) + 60;
+        const headerOffset = headerH + 60;
         let idx = 0;
         secs.forEach((s, i) => { if (s && s.getBoundingClientRect().top <= headerOffset) idx = i; });
         tabLinks.forEach((a, i) => { a.classList.toggle('is-active', i === idx); if (i === idx) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
@@ -610,7 +612,7 @@ window.RARO = (function () {
     if (p.kind) rows['구성'] = p.kind;
     if (p.colors && p.colors.length) rows['색상'] = p.colors.map((c) => c.name).join(', ');
     Object.assign(rows, d.spec);
-    document.querySelector('[data-spec]').innerHTML = '<div class="spec__figure">치수 도면 (' + (p.size ? 'W' + p.size + ' — 확인 필요' : '상세 이미지 참조') + ')</div>'
+    document.querySelector('[data-spec]').innerHTML = '<div class="spec__figure">치수 도면 (' + (p.size ? 'W' + p.size + ' · 도면은 실제 사이트 연동 시 표시' : '상세 이미지 참조') + ')</div>'
       + '<table><tbody>' + Object.entries(rows).map(([k, v]) => '<tr><th scope="row">' + esc(k) + '</th><td>' + esc(v) + '</td></tr>').join('') + '</tbody></table>';
     document.querySelector('[data-ship-text]').textContent = d.shipping ? '배송비 ' + d.shipping : '배송비는 옵션 선택 후 표시됩니다.';
     const asRaw = d.spec['AS 책임자와 전화번호'] || ('라로퍼니처 고객센터 ' + data.company.tel);

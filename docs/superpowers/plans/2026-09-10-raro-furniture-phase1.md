@@ -2254,7 +2254,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Modify: `assets/style.css`, `assets/app.js` (스크린샷에서 발견한 문제만)
 - Create: `docs/screenshots/*.png` (12장)
 
-- [ ] **Step 1: 스크린샷 스크립트 작성**
+- [x] **Step 1: 스크린샷 스크립트 작성**
 
 `tools/screenshot.sh`:
 ```bash
@@ -2281,12 +2281,12 @@ for p in "${PAGES[@]}"; do
 done
 ```
 
-- [ ] **Step 2: 실행**
+- [x] **Step 2: 실행**
 
 Run: `bash tools/screenshot.sh`
 Expected: `saved …` 12줄. `ls docs/screenshots/*.png | wc -l` → 12 이상.
 
-- [ ] **Step 3: 데이터 로드 실패 문구가 없는지 확인**
+- [x] **Step 3: 데이터 로드 실패 문구가 없는지 확인**
 
 Run:
 ```bash
@@ -2294,7 +2294,7 @@ E="/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"; for u in "inde
 ```
 Expected: 네 줄 모두 `-> 0`.
 
-- [ ] **Step 4: 12장을 Read 도구로 하나씩 열어 점검**
+- [x] **Step 4: 12장을 Read 도구로 하나씩 열어 점검**
 
 점검 항목(스펙 3장·4장 기준):
 - 데스크톱(1440): 헤더 2행(로고·검색·유틸 / 카테고리 메뉴), 상품 4열, 상세 7:5 2단, 푸터 5열.
@@ -2308,7 +2308,7 @@ Expected: 네 줄 모두 `-> 0`.
 - 상세 페이지 스티키 패널이 헤더에 가려짐 → `--header-h` 값을 실제 헤더 높이(개발자 도구 대신 스크린샷의 헤더 높이 픽셀)로 맞춤.
 - 긴 상품명이 카드 높이를 흔듦 → `.card__name`에 `min-height: 2.9em` 추가.
 
-- [ ] **Step 5: JS 테스트 재확인**
+- [x] **Step 5: JS 테스트 재확인**
 
 Run:
 ```bash
@@ -2316,7 +2316,7 @@ Run:
 ```
 Expected: `OK 33 passed, 0 failed` 와 `OK`.
 
-- [ ] **Step 6: 커밋**
+- [x] **Step 6: 커밋**
 
 ```bash
 git add tools/screenshot.sh docs/screenshots assets/style.css assets/app.js && git commit -m "test: 4페이지 × 3폭 스크린샷과 반응형 보정
