@@ -42,7 +42,7 @@
 - Create: `data/raw/.gitkeep`, `tests/__init__.py`, `tools/.gitkeep`, `docs/screenshots/.gitkeep`
 - Modify: `.gitignore`
 
-- [ ] **Step 1: 폴더와 빈 파일 생성**
+- [x] **Step 1: 폴더와 빈 파일 생성**
 
 Run:
 ```bash
@@ -50,7 +50,7 @@ mkdir -p data/raw tests tools docs/screenshots && touch data/raw/.gitkeep tests/
 ```
 Expected: 오류 없음. `ls data tests tools docs`에 폴더가 보임.
 
-- [ ] **Step 2: .gitignore에 수집 캐시 추가**
+- [x] **Step 2: .gitignore에 수집 캐시 추가**
 
 `.gitignore`를 다음 내용으로 덮어쓴다:
 ```
@@ -61,7 +61,7 @@ __pycache__/
 *.log
 ```
 
-- [ ] **Step 3: README 작성**
+- [x] **Step 3: README 작성**
 
 `README.md`:
 ````markdown
@@ -108,7 +108,7 @@ bash tools/screenshot.sh                                          # 4페이지 �
 리뷰 목록, 이벤트, 고객센터, 로그인·회원가입, 장바구니·주문, 마이페이지, 약관 페이지를 같은 디자인 시스템으로 확장한다. 별도 계획 문서로 진행.
 ````
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git add -A && git commit -m "chore: 프로젝트 골격과 README

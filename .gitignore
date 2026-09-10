@@ -1,4 +1,5 @@
 .superpowers/
 .firecrawl/
+data/raw/*.html
 __pycache__/
 *.log
