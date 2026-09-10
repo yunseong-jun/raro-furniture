@@ -129,7 +129,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - 상세: `<div class="item_detail_tit"><h3>이름</h3>`, `name="set_goods_price" value="398000"`, `name="set_goods_fixedPrice" value="500000.00"`, `<dl class="item_delivery"><dd><strong>40,000원</strong>`, 갤러리 `detailKeyID[n] = "<img src=\"URL\"`, 옵션 `<select name="optionNo_0">` 의 `<option>`(`=`로 시작하는 안내 항목 제외), 상세 이미지 = `id="detail"` 이후 hgodo 이미지 중 `/img/` `/info/` `/ourhome/` 경로 제외, 고시 표 `<table class="left_table_type">` th/td, 탭 `상품후기 <strong>(N)</strong>` `상품문의 <strong>(N)</strong>`.
 - 홈 리뷰: `<ul class="reviewWrap">` 블록. `background:url('IMG')`, `<a class="reviewContent">본문</a>`, `rating_star … width:100%`, `board_name`, `board_day`, `goods_view.php?goodsNo=N` + 상품명.
 
-- [ ] **Step 1: 실패하는 테스트 작성**
+- [x] **Step 1: 실패하는 테스트 작성**
 
 `tests/test_build.py`:
 ```python
@@ -294,12 +294,12 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
-- [ ] **Step 2: 테스트가 실패하는지 확인**
+- [x] **Step 2: 테스트가 실패하는지 확인**
 
 Run: `PYTHONIOENCODING=utf-8 python -m unittest tests.test_build -v`
 Expected: `ModuleNotFoundError: No module named 'build'` 로 전부 실패(ERROR).
 
-- [ ] **Step 3: build.py 파서 구현 (수집·조립은 Task 3에서)**
+- [x] **Step 3: build.py 파서 구현 (수집·조립은 Task 3에서)**
 
 `data/build.py`:
 ```python
@@ -512,12 +512,12 @@ def price_band(price: int) -> str:
     return "50만원 이상"
 ```
 
-- [ ] **Step 4: 테스트 통과 확인**
+- [x] **Step 4: 테스트 통과 확인**
 
 Run: `PYTHONIOENCODING=utf-8 python -m unittest tests.test_build -v`
 Expected: `Ran 10 tests … OK`
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add data/build.py tests/test_build.py && git commit -m "feat(data): 목록·상세·리뷰 파서와 상품 속성 추출
