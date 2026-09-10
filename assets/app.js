@@ -44,7 +44,10 @@ window.RARO = (function () {
   /* ==== 순수 함수 ==== */
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fmt = (n) => (n == null ? '가격 문의' : Number(n).toLocaleString('ko-KR') + '원');
-  const stars = (n) => '★'.repeat(n) + '☆'.repeat(5 - n);
+  const stars = (n) => {
+    const k = Math.max(0, Math.min(5, Number(n) || 0));
+    return '★'.repeat(k) + '☆'.repeat(5 - k);
+  };
   function discountRate(price, listPrice) {
     if (!price || !listPrice || listPrice <= price) return 0;
     return Math.round((1 - price / listPrice) * 100);
@@ -78,7 +81,8 @@ window.RARO = (function () {
   }
   function valueFor(p, key) {
     switch (key) {
-      case 'size': return sizeBand(p.size);
+      // applyFilters/filterOptions의 다중 사이즈 매칭(sizeBands)과 대표값을 맞추기 위해 첫 밴드를 사용
+      case 'size': return sizeBands(p)[0] || null;
       case 'seats': return p.seats ? p.seats + '인' : null;
       case 'price': return p.priceBand;
       case 'sale': return discountRate(p.price, p.listPrice) > 0 ? '1' : '0';
@@ -101,12 +105,13 @@ window.RARO = (function () {
     const push = (v) => { if (v != null && !vals.includes(v)) vals.push(v); };
     list.forEach((p) => { if (key === 'cate') catesOf(p).forEach(push); else push(valueFor(p, key)); });
     if (key === 'seats') vals.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+    if (key === 'cate') vals.sort((a, b) => cateRank(a) - cateRank(b));
     return vals;
   }
   function searchProducts(list, q) {
     const terms = String(q || '').trim().split(/\s+/).filter(Boolean);
     if (!terms.length) return list.slice();
-    return list.filter((p) => terms.every((t) => p.name.includes(t)));
+    return list.filter((p) => terms.every((t) => (p.name || '').toLowerCase().includes(t.toLowerCase())));
   }
   const topOf = (code) => NAV.find((t) => t.code === code);
   const topName = (code) => (topOf(code) ? topOf(code).name : '');
@@ -117,6 +122,15 @@ window.RARO = (function () {
   function topOfCate(code) {
     for (const t of NAV) if (t.code === code || t.children.some((ch) => ch[0] === code)) return t.code;
     return null;
+  }
+  // NAV 상의 노출 순서(대분류 순서 → 그 안의 자식 인덱스)로 카테고리 코드를 정렬하기 위한 우선순위
+  function cateRank(code) {
+    for (let ti = 0; ti < NAV.length; ti++) {
+      if (NAV[ti].code === code) return ti * 1000;
+      const ci = NAV[ti].children.findIndex((ch) => ch[0] === code);
+      if (ci !== -1) return ti * 1000 + ci + 1;
+    }
+    return Infinity;
   }
   const labelFor = (key, v) => (key === 'cate' ? childName(v) : key === 'top' ? topName(v) : v);
 
@@ -133,6 +147,7 @@ window.RARO = (function () {
   const product = (no) => (state.byNo ? state.byNo.get(String(no)) : undefined);
   const products = (nos) => (nos || []).map(product).filter(Boolean);
   const param = (k) => new URLSearchParams(location.search).get(k);
+  const cateDef = (data, code) => data.categories.find((c) => c.code === code);
 
   /* ==== 템플릿 ==== */
   const IMG_ERR = 'onerror="this.onerror=null;this.parentNode.classList.add(\'is-broken\');this.remove()"';
@@ -145,10 +160,11 @@ window.RARO = (function () {
     if (p.detail && p.detail.options && p.detail.options.length) meta.push('구성 ' + p.detail.options.length + '종');
     const tags = (p.tags || []).map((t) => '<span class="tag">' + esc(t) + '</span>').join('');
     const srcset = p.imageLarge ? ' srcset="' + esc(p.image) + ' 400w, ' + esc(p.imageLarge) + ' 1000w" sizes="(max-width: 768px) 50vw, 25vw"' : '';
+    const loadAttr = opts.eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
     return '<a class="card" href="view.html?no=' + esc(p.no) + '">'
       + '<div class="card__tile">'
       + (badge ? '<span class="card__badge' + (badge === 'NEW' ? ' card__badge--new' : '') + '">' + esc(badge) + '</span>' : '')
-      + '<img src="' + esc(p.image) + '"' + srcset + ' alt="' + esc(p.name) + '" loading="lazy" ' + IMG_ERR + '>'
+      + '<img src="' + esc(p.image) + '"' + srcset + ' alt="' + esc(p.name) + '" ' + loadAttr + ' ' + IMG_ERR + '>'
       + '<button class="card__wish" type="button" aria-label="찜하기" onclick="event.preventDefault();this.classList.toggle(\'is-on\')">♡</button>'
       + '</div><div class="card__body"><div class="card__name">' + esc(p.name) + '</div>'
       + '<div class="card__price">' + (rate ? '<span class="rate">' + rate + '%</span>' : '') + fmt(p.price)
@@ -156,10 +172,14 @@ window.RARO = (function () {
       + '<div class="card__meta">' + meta.join(' · ') + tags + '</div></div></a>';
   }
   function renderCards(el, list, opts) {
-    el.innerHTML = list.length ? list.map((p) => cardHTML(p, opts)).join('') : '<div class="list__empty">조건에 맞는 상품이 없습니다.</div>';
+    opts = opts || {};
+    el.innerHTML = list.length
+      ? list.map((p, i) => cardHTML(p, Object.assign({}, opts, { eager: opts.eager || (opts.eagerFirst && i < 4) }))).join('')
+      : '<div class="list__empty">조건에 맞는 상품이 없습니다.</div>';
   }
-  function img(src, alt, cls) {
-    return '<img src="' + esc(src) + '" alt="' + esc(alt || '') + '"' + (cls ? ' class="' + cls + '"' : '') + ' loading="lazy" ' + IMG_ERR + '>';
+  function img(src, alt, cls, eager) {
+    const loadAttr = eager ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
+    return '<img src="' + esc(src) + '" alt="' + esc(alt || '') + '"' + (cls ? ' class="' + esc(cls) + '"' : '') + ' ' + loadAttr + ' ' + IMG_ERR + '>';
   }
 
   /* ==== 헤더 · 푸터 ==== */
@@ -169,24 +189,24 @@ window.RARO = (function () {
     const drawer = NAV.map((t) => '<li><a href="list.html?cate=' + t.code + '">' + esc(t.name) + '</a><ul>'
       + t.children.map((c) => '<li><a href="list.html?cate=' + c[0] + '">' + esc(c[1]) + '</a></li>').join('') + '</ul></li>').join('');
     return '<div class="hdr__top container">'
-      + '<button class="hdr__burger" type="button" aria-label="전체 메뉴" data-open-drawer>' + ICON.menu + '</button>'
+      + '<button class="hdr__burger" type="button" aria-label="전체 메뉴" aria-expanded="false" aria-controls="site-drawer" data-open-drawer>' + ICON.menu + '</button>'
       + '<a class="hdr__logo" href="index.html"><img src="assets/logo-header.png" alt="라로퍼니처 RARO FURNITURE"></a>'
       + '<form class="hdr__search" action="list.html" role="search"><input type="search" name="q" placeholder="세라믹 식탁, 리클라이너 소파 검색" aria-label="검색어">'
       + '<input type="hidden" name="cate" value="all"><button type="submit" aria-label="검색">' + ICON.search + '</button></form>'
       + '<nav class="hdr__util" aria-label="회원 메뉴"><a href="#" title="로그인">' + ICON.user + '<span>로그인</span></a>'
       + '<a href="#" title="찜">' + ICON.heart + '<span>찜</span></a>'
-      + '<a href="#" title="장바구니">' + ICON.cart + '<span>장바구니</span><em class="hdr__count">0</em></a></nav></div>'
+      + '<a href="#" title="장바구니">' + ICON.cart + '<span>장바구니</span><span class="hdr__count" aria-label="담긴 상품 0개">0</span></a></nav></div>'
       + '<nav class="hdr__nav container" aria-label="카테고리"><ul class="hdr__menu">' + menu
       + '<li class="hdr__sep" aria-hidden="true"></li>'
-      + '<li><a href="list.html?cate=all&sort=popular">BEST</a></li><li><a href="list.html?cate=all&sort=new">NEW</a></li>'
-      + '<li><a class="is-accent" href="list.html?cate=all&sale=1">SALE</a></li>'
+      + '<li><a href="list.html?cate=all&amp;sort=popular">BEST</a></li><li><a href="list.html?cate=all&amp;sort=new">NEW</a></li>'
+      + '<li><a class="is-accent" href="list.html?cate=all&amp;sale=1">SALE</a></li>'
       + '<li class="hdr__sep" aria-hidden="true"></li>'
       + '<li><a href="brand.html">브랜드</a></li><li><a href="brand.html#showroom">쇼룸</a></li><li><a href="index.html#space">리뷰</a></li></ul></nav>'
-      + '<div class="drawer" data-drawer><div class="drawer__backdrop" data-close-drawer></div><div class="drawer__panel">'
+      + '<div class="drawer" data-drawer id="site-drawer" role="dialog" aria-modal="true" aria-label="전체 메뉴"><div class="drawer__backdrop" data-close-drawer></div><div class="drawer__panel">'
       + '<div class="drawer__head"><img src="assets/logo-header.png" alt="라로퍼니처" height="26"><button type="button" aria-label="닫기" data-close-drawer>✕</button></div>'
       + '<ul class="drawer__menu">' + drawer + '</ul>'
-      + '<div class="drawer__links"><a href="list.html?cate=all&sort=popular">BEST</a><a href="list.html?cate=all&sort=new">NEW</a>'
-      + '<a class="is-accent" href="list.html?cate=all&sale=1">SALE</a><a href="brand.html">브랜드</a><a href="brand.html#showroom">쇼룸</a></div>'
+      + '<div class="drawer__links"><a href="list.html?cate=all&amp;sort=popular">BEST</a><a href="list.html?cate=all&amp;sort=new">NEW</a>'
+      + '<a class="is-accent" href="list.html?cate=all&amp;sale=1">SALE</a><a href="brand.html">브랜드</a><a href="brand.html#showroom">쇼룸</a></div>'
       + '<div class="drawer__util"><a href="#">로그인</a><a href="#">회원가입</a><a href="#">주문조회</a></div></div></div>';
   }
   function footerHTML(c) {
@@ -207,9 +227,21 @@ window.RARO = (function () {
   }
   function bindHeader(hdr) {
     const drawer = hdr.querySelector('[data-drawer]');
-    hdr.querySelectorAll('[data-open-drawer]').forEach((b) => b.addEventListener('click', () => drawer.classList.add('is-open')));
-    hdr.querySelectorAll('[data-close-drawer]').forEach((b) => b.addEventListener('click', () => drawer.classList.remove('is-open')));
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') drawer.classList.remove('is-open'); });
+    const burger = hdr.querySelector('[data-open-drawer]');
+    const drawerClose = drawer.querySelector('button[data-close-drawer]');
+    function openDrawer() {
+      drawer.classList.add('is-open');
+      if (burger) burger.setAttribute('aria-expanded', 'true');
+      if (drawerClose) drawerClose.focus();
+    }
+    function closeDrawer() {
+      drawer.classList.remove('is-open');
+      if (burger) burger.setAttribute('aria-expanded', 'false');
+      if (burger) burger.focus();
+    }
+    hdr.querySelectorAll('[data-open-drawer]').forEach((b) => b.addEventListener('click', openDrawer));
+    hdr.querySelectorAll('[data-close-drawer]').forEach((b) => b.addEventListener('click', closeDrawer));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && drawer.classList.contains('is-open')) closeDrawer(); });
     let last = 0;
     window.addEventListener('scroll', () => {
       const y = window.scrollY;
@@ -242,11 +274,20 @@ window.RARO = (function () {
       });
       return;
     }
-    if (pages[page]) pages[page](data);
+    if (pages[page]) {
+      try {
+        pages[page](data);
+      } catch (e) {
+        console.error('[RARO] 페이지 렌더 실패', e);
+        document.querySelectorAll('[data-needs-data]').forEach((el) => {
+          el.innerHTML = '<div class="notice">화면을 그리는 중 문제가 발생했습니다. 콘솔을 확인해 주세요.</div>';
+        });
+      }
+    }
   }
   if (typeof document !== 'undefined') document.addEventListener('DOMContentLoaded', init);
 
   return { NAV, FILTER_DEFS, PRICE_BANDS, SIZE_BANDS, esc, fmt, stars, discountRate, optionTotal, sizeBand, sizeBands, catesOf, inCate,
            sortProducts, applyFilters, filterOptions, searchProducts, valueFor, labelFor, topOf, topName, childName, topOfCate,
-           loadData, product, products, param, cardHTML, renderCards, img, headerHTML, footerHTML, pages, state };
+           loadData, product, products, param, cateDef, cardHTML, renderCards, img, headerHTML, footerHTML, pages, state };
 })();
