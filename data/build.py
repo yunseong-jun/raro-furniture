@@ -4,6 +4,7 @@
 사용법:
     PYTHONIOENCODING=utf-8 python data/build.py            # 캐시 없는 페이지만 요청 후 생성
     PYTHONIOENCODING=utf-8 python data/build.py --offline  # data/raw/ 캐시만 사용 (네트워크 없음)
+    PYTHONIOENCODING=utf-8 python data/build.py --refresh  # 캐시를 무시하고 모두 다시 받음
 
 요청은 브라우저 UA로 1초 간격, 총 40건 안팎(목록 19 + 목록 밖 대표 상품 상세 ~10 + DETAIL_GOODS 상세 + 홈 1).
 결과 HTML은 data/raw/에 캐시한다.
@@ -14,6 +15,7 @@ import pathlib
 import re
 import sys
 import time
+import urllib.error
 import urllib.request
 from datetime import date
 
@@ -23,6 +25,18 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
 ROOT = pathlib.Path(__file__).resolve().parent
 RAW = ROOT / "raw"
 OUT = ROOT / "site.json"
+
+# ---------------------------------------------------------------- JSON 계약
+# site.json 의 "products" 배열 원소는 아래 키를 항상 갖는다:
+#   no, name, image, imageLarge, price, listPrice, reviewCount, colors, tags,
+#   cate, cates, top, series, size, sizes, seats, shape, material, kind, priceBand
+# 상세 페이지를 수집한 상품(DETAIL_GOODS 및 목록 밖 대표 상품)만 추가로 "detail" 키를 갖는다:
+#   detail.name, detail.price, detail.listPrice, detail.shipping, detail.gallery,
+#   detail.options ([{name, delta}, ...]), detail.optionLabel, detail.optionLevels,
+#   detail.detailImages, detail.spec, detail.reviewCount, detail.qnaCount,
+#   detail.cateCd, detail.colors
+# "categories" 배열의 각 대분류 객체는 "features"(핵심 특징 3개) 키를 갖는다.
+# 필터는 sizes/cates, 표시는 size/cate.
 
 
 # ---------------------------------------------------------------- 공통
@@ -56,6 +70,9 @@ def parse_colors(fragment: str) -> list:
 
 
 # ---------------------------------------------------------------- 목록 파서
+_BAD_IMAGE_LARGE = re.compile(r"logo|banner", re.I)
+
+
 def parse_list(page: str, stats: dict = None) -> list:
     """goods_list.php 페이지에서 상품 목록을 뽑는다.
 
@@ -64,7 +81,8 @@ def parse_list(page: str, stats: dict = None) -> list:
     items = []
     for block in re.findall(r'<div class="item_cont"[^>]*>(?:(?!<div class="item_cont"|</ul>).)*',
                              page, re.S):
-        no = re.search(r'data-goods-no="(\d+)"', block)
+        no = (re.search(r'data-goods-no="(\d+)"', block)
+              or re.search(r'goods_view\.php\?goodsNo=(\d+)', block))
         name = re.search(r'<strong class="item_name">(.*?)</strong>', block, re.S)
         if not (no and name):
             if stats is not None:
@@ -72,6 +90,9 @@ def parse_list(page: str, stats: dict = None) -> list:
             continue
         img = re.search(r'data-image-main\s*=\s*"([^"]+)"', block)
         img_large = re.search(r'data-image-detail\s*=\s*"([^"]+)"', block)
+        img_large_url = img_large.group(1) if img_large else ""
+        if _BAD_IMAGE_LARGE.search(img_large_url):
+            img_large_url = ""
         dc = re.search(r'<div class="dcPrice" custom="([\d.]+)" price="([\d.]+)"', block)
         price = to_int(dc.group(2)) if dc else to_int(
             (re.search(r'data-goods-price="([\d.]+)"', block) or [None, None])[1])
@@ -80,11 +101,13 @@ def parse_list(page: str, stats: dict = None) -> list:
         rc = re.search(r"REVIEW\s*:\s*(\d+)", block)
         colors = parse_colors(block)
         tags = ["무료배송"] if "free_delivery" in block else []
+        if "icon_soldout" in block:
+            tags.append("품절")
         items.append({
             "no": no.group(1),
             "name": clean(name.group(1)),
             "image": img.group(1) if img else "",
-            "imageLarge": img_large.group(1) if img_large else "",
+            "imageLarge": img_large_url,
             "price": price,
             "listPrice": list_price,
             "reviewCount": int(rc.group(1)) if rc else 0,
@@ -94,8 +117,37 @@ def parse_list(page: str, stats: dict = None) -> list:
     return items
 
 
+def list_page_warnings(code: str, page: str, items: list) -> list:
+    """목록 페이지 파싱 결과를 검증해 경고/참고 메시지 목록을 돌려준다.
+
+    같은 상품이 페이지에 두 번 노출되면(블록 수 > 고유 상품 수) 파싱 실패가 아니므로
+    "참고: 중복 노출"만 남기고, 그렇지 않은데 블록 수가 실제 data-goods-no 개수와
+    다르면 파싱이 빠진 것이므로 "경고"를 남긴다.
+    """
+    distinct_items = len({i["no"] for i in items})
+    expected = len(set(re.findall(r'data-goods-no="(\d+)"', page)))
+    if len(items) > distinct_items:
+        return [f"  참고: {code} 중복 노출 {len(items) - distinct_items}건"]
+    if distinct_items != expected:
+        return [f"  경고: {code} 목록 {distinct_items}/{expected}개만 파싱됨"]
+    return []
+
+
 # ---------------------------------------------------------------- 상세 파서
 _SKIP_SPEC = {"상세페이지 참조", "상품상세참조", "상세페이지참조", "상품 상세 참조", ""}
+_BAD_DETAIL_IMG = re.compile(r"event_bnr|_video_|_gift|_notice", re.I)
+_OPTION_PRICE_SUFFIX = re.compile(r"\s*:\s*[+-]?[\d,]+원$")
+
+
+def _option_sno_delta(value: str) -> int:
+    """optionSnoInput 의 value="일련번호||추가금액||||..." 에서 추가금액(delta)을 뽑는다."""
+    fields = value.split("||")
+    if len(fields) < 2 or not fields[1]:
+        return 0
+    try:
+        return int(fields[1])
+    except ValueError:
+        return 0
 
 
 def parse_detail(page: str) -> dict:
@@ -113,17 +165,46 @@ def parse_detail(page: str) -> dict:
     fixed = re.search(r'name="set_goods_fixedPrice" value="([\d.]+)"', page)
     ship = re.search(r'<dl class="item_delivery">.*?<dd>(.*?)(?:<span class="btn_layer"|</dd>)', page, re.S)
     gallery = re.findall(r'detailKeyID\[\d+\]\s*=\s*"<img\s+src=\\"([^"\\]+)\\"', page)
+
     options = []
+    option_start = None
     sel = re.search(r'<select name="optionNo_0"[^>]*>(.*?)</select>', page, re.S)
     if sel:
+        option_start = sel.start()
         for label in re.findall(r"<option[^>]*>(.*?)</option>", sel.group(1), re.S):
             label = clean(label)
             if label and not label.startswith("="):
                 options.append({"name": label, "delta": None})
+    else:
+        sel = re.search(r'<select name="optionSnoInput"[^>]*>(.*?)</select>', page, re.S)
+        if sel:
+            option_start = sel.start()
+            for value, raw_label in re.findall(r'<option[^>]*value="([^"]*)"[^>]*>(.*?)</option>',
+                                                sel.group(1), re.S):
+                label = clean(raw_label)
+                if not value or not label or label.startswith("="):
+                    continue
+                option_name = _OPTION_PRICE_SUFFIX.sub("", label)
+                options.append({"name": option_name, "delta": _option_sno_delta(value)})
+
+    option_label = ""
+    if option_start is not None:
+        dts = re.findall(r"<dt>(.*?)</dt>", page[:option_start], re.S)
+        option_label = clean(dts[-1]) if dts else ""
+
+    cnt = re.search(r'name="optionCntInput" value="(\d+)"', page)
+    if cnt:
+        option_levels = int(cnt.group(1))
+    elif options:
+        option_levels = 1
+    else:
+        option_levels = 0
+
     detail_images = []
     tail = page.split('id="detail"', 1)[1] if 'id="detail"' in page else ""
     for src in re.findall(r'<img[^>]+src="([^"]+)"', tail):
-        if "hgodo.com" in src and not re.search(r"/(img|info|ourhome)/", src):
+        if ("hgodo.com" in src and not re.search(r"/(img|info|ourhome)/", src)
+                and not _BAD_DETAIL_IMG.search(src) and "/delivery/" not in src):
             detail_images.append(src)
     spec = {}
     table = re.search(r'<table class="left_table_type">(.*?)</table>', page, re.S)
@@ -145,6 +226,8 @@ def parse_detail(page: str) -> dict:
         "shipping": clean(ship.group(1)) if ship else "",
         "gallery": gallery,
         "options": options,
+        "optionLabel": option_label,
+        "optionLevels": option_levels,
         "detailImages": detail_images,
         "spec": spec,
         "reviewCount": int(rc.group(1)) if rc else 0,
@@ -228,8 +311,12 @@ def derive(name: str, top: str) -> dict:
 def price_band(price):
     if price is None:
         return None
+    if price <= 100000:
+        return "10만원 이하"
+    if price <= 200000:
+        return "10–20만원"
     if price <= 300000:
-        return "30만원 이하"
+        return "20–30만원"
     if price <= 500000:
         return "30–50만원"
     return "50만원 이상"
@@ -238,15 +325,15 @@ def price_band(price):
 # ---------------------------------------------------------------- 사이트 상수 (2026-09-10 사이트 확인 기준)
 CATEGORIES = [
     {"code": "012", "name": "세라믹 · 대리석 식탁", "short": "세라믹·대리석 식탁",
-     "desc": "열과 흠집에 강한 포세린 통 세라믹, 무늬가 살아 있는 대리석 상판. 2인 원형부터 6인 1900까지.",
+     "desc": "열과 흠집에 강한 포세린 통 세라믹, 무늬가 살아 있는 대리석 상판. 원형 소형 테이블부터 6인 1900까지.",
      "guide": {"title": "식탁 사이즈, 이렇게 고르세요.",
                "body": "4인 가족은 1200~1400, 손님이 잦으면 1600 이상이 편합니다. 의자를 빼내는 공간으로 식탁 둘레에 70cm를 더해 보세요. 좁은 공간이면 원형이 동선을 덜 막습니다."},
      "children": [{"code": "012002", "name": "세라믹 식탁 세트"}, {"code": "012003", "name": "세라믹 테이블"},
                   {"code": "012004", "name": "대리석 식탁 세트"}, {"code": "012005", "name": "대리석 테이블"}]},
     {"code": "013", "name": "원목 식탁", "short": "원목 식탁",
-     "desc": "고무나무·참죽나무 원목의 결을 그대로 살린 식탁. 의자·벤치 세트와 테이블 단품.",
+     "desc": "고무나무·참죽나무·아카시아 원목의 결을 그대로 살린 식탁. 의자·벤치 세트와 테이블 단품.",
      "guide": {"title": "원목 식탁은 이렇게 관리하세요.",
-               "body": "뜨거운 냄비는 받침을 쓰고, 물기는 바로 닦아 주세요. 직사광선을 오래 받으면 색이 변할 수 있습니다. 6개월에 한 번 오일을 발라 주면 결이 오래 유지됩니다."},
+               "body": "뜨거운 냄비는 받침을 쓰고, 물기는 바로 닦아 주세요. 직사광선을 오래 받으면 색이 변할 수 있습니다. 오일 마감 제품이라면 6개월에 한 번 오일을 발라 주면 결이 오래 유지됩니다."},
      "children": [{"code": "013002", "name": "원목 테이블"}, {"code": "013003", "name": "원목 식탁 세트"}]},
     {"code": "003", "name": "거실가구", "short": "거실가구",
      "desc": "전동 리클라이너와 패브릭 소파, TV 거실장과 거실 테이블. 거실 한 세트를 같은 톤으로.",
@@ -295,22 +382,26 @@ HERO = [
 
 # 상세 페이지 "핵심 특징" — 카테고리 기본 문구. 상품명·고시표에서 확인되는 사실만 쓴다.
 FEATURES = {
-    "012": [{"title": "포세린 통 세라믹 상판", "body": "열과 흠집, 얼룩에 강해 뜨거운 냄비를 바로 올려도 됩니다. 물기는 닦아내기만 하면 됩니다."},
-            {"title": "세트 구성 선택", "body": "식탁 단품, 의자 4개, 의자 2개 + 벤치 구성 중 고를 수 있습니다. 구성별 가격은 옵션에서 확인하세요."},
-            {"title": "기사 방문 설치", "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."}],
+    "012": [{"title": "포세린 통 세라믹 상판", "body": "열과 흠집에 강한 소재입니다. 상판 관리 방법은 상세 이미지를 확인하세요."},
+            {"title": "구성 선택", "body": "구성은 상품마다 다릅니다. 식탁 단품, 의자·벤치 세트 등 옵션에서 고르세요."},
+            {"title": "배송 · 설치 안내", "body": "배송비는 상품 수령 시 결제하는 상품이 많습니다. 설치 서비스 여부와 현관·통로 폭은 주문 전에 확인해 주세요."}],
     "013": [{"title": "원목 상판", "body": "고무나무·참죽나무 원목의 결과 색을 그대로 살렸습니다. 같은 이름의 의자·벤치와 톤이 맞습니다."},
             {"title": "세트와 단품", "body": "테이블 단품과 의자·벤치 세트 구성이 있습니다. 구성별 가격은 옵션에서 확인하세요."},
-            {"title": "기사 방문 설치", "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."}],
+            {"title": "배송 · 설치 안내", "body": "배송비는 상품 수령 시 결제하는 상품이 많습니다. 설치 서비스 여부와 현관·통로 폭은 주문 전에 확인해 주세요."}],
     "003": [{"title": "소재와 마감", "body": "천연 가죽, 비건 가죽, 패브릭 원단 중 상품명에 표기된 소재를 사용합니다."},
             {"title": "편의 기능", "body": "전동 리클라이너, 스윙 헤드레스트, 틸팅 등 상품명에 표기된 기능이 적용됩니다."},
-            {"title": "기사 방문 설치", "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."}],
+            {"title": "배송 · 설치 안내", "body": "배송비는 상품 수령 시 결제하는 상품이 많습니다. 설치 서비스 여부와 현관·통로 폭은 주문 전에 확인해 주세요."}],
     "006": [{"title": "프레임", "body": "고무나무·참죽나무 원목 또는 스틸 프레임. 상품명에 표기된 소재를 확인하세요."},
             {"title": "좌판", "body": "원목 좌판, 인조가죽·패브릭 방석, 라탄 등 상품명에 표기된 마감입니다."},
-            {"title": "배송", "body": "의자는 완제품 또는 간단 조립 상태로 배송됩니다. 배송비는 옵션 선택 후 표시됩니다."}],
+            {"title": "배송", "body": "배송비는 상품별로 다르며 무료배송 상품도 있습니다. 옵션 선택 후 표시되는 배송비를 확인하세요."}],
     "004": [{"title": "구성", "body": "매트리스 포함 세트와 프레임 단품, 서랍·수납 여부는 상품명에 표기되어 있습니다."},
             {"title": "사이즈", "body": "SS·Q·K·LK 등 표기 사이즈를 방 크기와 함께 확인하세요."},
-            {"title": "기사 방문 설치", "body": "배송비는 상품 수령 시 결제합니다. 설치 전 현관과 통로 폭을 확인해 주세요."}],
+            {"title": "배송 · 설치 안내", "body": "배송비는 상품 수령 시 결제하는 상품이 많습니다. 설치 서비스 여부와 현관·통로 폭은 주문 전에 확인해 주세요."}],
 }
+
+for _c in CATEGORIES:
+    _c["features"] = FEATURES[_c["code"]]
+del _c
 
 COMPANY = {
     "brand": "라로퍼니처", "name": "㈜퍼니우스", "ceo": "전재국",
@@ -325,7 +416,7 @@ COMPANY = {
         "철저한 품질관리와 최소한의 유통경로로, 프리미엄 상품을 합리적인 가격에 제공합니다.",
         "중국 심천·동관·순관·천진, 베트남 동나이·빈정의 6개 전문 제조 공장에서 원목가구, 대리석, 화산석, 세라믹, 소파를 분야별 장인의 손길로 만듭니다.",
     ],
-    "numbers": [{"value": "30", "unit": "년", "label": "가구 제조 기술력"},
+    "numbers": [{"value": "30", "unit": "여 년", "label": "가구 제조 기술력"},
                 {"value": "6", "unit": "개", "label": "자체 관리 제조 공장 (중국 4 · 베트남 2)"},
                 {"value": "5", "unit": "종", "label": "원목 · 대리석 · 화산석 · 세라믹 · 소파"}],
     "showroomHours": "확인 필요",
@@ -336,10 +427,26 @@ COMPANY = {
 def assemble_product(item: dict, cate: str, top: str) -> dict:
     p = dict(item)
     p["cate"] = cate
+    p["cates"] = [cate]
     p["top"] = top
     p.update(derive(p["name"], top))
     p["priceBand"] = price_band(p["price"]) if p.get("price") else None
     return p
+
+
+def register_item(products: dict, order: list, item: dict, cate: str, top: str) -> None:
+    """상품 하나를 목록 페이지에서 만난 카테고리로 등록한다.
+
+    이미 등록된 상품(다른 소분류 목록에도 나타나는 상품)이면 새로 만들지 않고,
+    처음 등록될 때 정해진 대표 cate 는 그대로 두면서 cates 에 새 소분류 코드만 추가한다.
+    """
+    no = item["no"]
+    if no in products:
+        if cate not in products[no]["cates"]:
+            products[no]["cates"].append(cate)
+        return
+    products[no] = assemble_product(item, cate, top)
+    order.append(no)
 
 
 def attach_detail(p: dict, detail: dict) -> None:
@@ -348,7 +455,6 @@ def attach_detail(p: dict, detail: dict) -> None:
         p["price"] = detail["price"]
         p["listPrice"] = detail["listPrice"]
         p["priceBand"] = price_band(p["price"])
-    p["features"] = FEATURES[p["top"]]
 
 
 def top_of(cate: str):
@@ -382,64 +488,87 @@ def product_from_detail(no: str, d: dict) -> dict:
 
 
 # ---------------------------------------------------------------- 수집
-def fetch(path: str, cache_name: str, offline: bool) -> str:
+def fetch(path: str, cache_name: str, offline: bool, marker: str = "", refresh: bool = False) -> str:
+    """URL 을 가져와 data/raw/ 에 캐시한다.
+
+    marker 를 넘기면 새로 받은 본문에 그 문자열이 있는지 확인하고, 없으면 사이트 구조가
+    바뀌었을 가능성이 있으므로 캐시하지 않고 SystemExit 로 중단한다(캐시된 파일을
+    그대로 읽어오는 경로에는 적용하지 않는다). refresh=True 면 캐시가 있어도 무시하고
+    다시 받는다. 네트워크 오류는 3초 대기 후 한 번만 재시도하고, 그래도 실패하면
+    SystemExit 로 중단한다.
+    """
     cache = RAW / f"{cache_name}.html"
-    if cache.exists():
+    if cache.exists() and not refresh:
         return cache.read_text(encoding="utf-8", errors="replace")
     if offline:
         raise SystemExit(f"캐시가 없습니다: {cache} (--offline 없이 실행하세요)")
     req = urllib.request.Request(BASE + path, headers={"User-Agent": UA, "Referer": BASE + "/"})
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        text = resp.read().decode("utf-8", errors="replace")
+    text, err = None, None
+    for attempt in range(2):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                text = resp.read().decode("utf-8", errors="replace")
+            break
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
+            err = e
+            if attempt == 0:
+                time.sleep(3)
+    if text is None:
+        raise SystemExit(f"요청 실패: {path} ({err})")
+    if marker and marker not in text:
+        raise SystemExit(f"마커 '{marker}' 를 찾지 못함: {path} (사이트 구조가 바뀌었을 수 있습니다)")
     cache.write_text(text, encoding="utf-8")
     print(f"  fetched {path}")
     time.sleep(1.0)
     return text
 
 
-def build(offline: bool = False) -> dict:
+def build(offline: bool = False, refresh: bool = False) -> dict:
     RAW.mkdir(exist_ok=True)
     products, order = {}, []
     total_skipped = 0
-    print("[1/3] 카테고리 목록")
+    known_tops = {top["code"] for top in CATEGORIES}
+    print("[1/4] 카테고리 목록")
     for top in CATEGORIES:
         for child in top["children"]:
             page = fetch(f"/goods/goods_list.php?cateCd={child['code']}&pageNum=40",
-                         f"list-{child['code']}", offline)
+                         f"list-{child['code']}", offline, marker="item_cont", refresh=refresh)
             stats = {"skipped": 0}
             items = parse_list(page, stats)
             total_skipped += stats["skipped"]
-            expected = len(set(re.findall(r'data-goods-no="(\d+)"', page)))
-            if len(items) != expected:
-                print(f"  경고: {child['code']} 목록 {len(items)}/{expected}개만 파싱됨")
+            for msg in list_page_warnings(child["code"], page, items):
+                print(msg)
             for item in items:
-                if item["no"] in products:
-                    continue
-                products[item["no"]] = assemble_product(item, child["code"], top["code"])
-                order.append(item["no"])
+                register_item(products, order, item, child["code"], top["code"])
     extra, seen_extra = [], set()
     for no in DETAIL_GOODS + HOME["weekly"] + HOME["best"] + HOME["new"] + HOME["lookbook"]:
         if no not in products and no not in seen_extra:
             extra.append(no)
             seen_extra.add(no)
-    print(f"[1b/3] 목록 밖 대표 상품 {len(extra)}개 상세로 등록")
+    print(f"[2/4] 목록 밖 대표 상품 {len(extra)}개 상세로 등록")
     for no in extra:
-        d = parse_detail(fetch(f"/goods/goods_view.php?goodsNo={no}", f"view-{no}", offline))
+        d = parse_detail(fetch(f"/goods/goods_view.php?goodsNo={no}", f"view-{no}", offline,
+                                marker="item_detail_tit", refresh=refresh))
         if d.get("name") and d.get("price"):
             products[no] = product_from_detail(no, d)
             order.append(no)
+            if products[no]["top"] not in known_tops:
+                print(f"  경고: {no} 알 수 없는 카테고리 {products[no]['top']}")
         else:
             print(f"  경고: {no} 상세 페이지에서 상품을 읽지 못함")
-    print("[2/3] 대표 상품 상세")
+    print("[3/4] 대표 상품 상세")
     for no in DETAIL_GOODS:
         if no not in products:
             print(f"  경고: {no} 는 목록에 없어 상세를 건너뜁니다")
             continue
         if "detail" in products[no]:
             continue
-        attach_detail(products[no], parse_detail(fetch(f"/goods/goods_view.php?goodsNo={no}", f"view-{no}", offline)))
-    print("[3/3] 메인 페이지 후기")
-    reviews = [r for r in parse_reviews(fetch("/main/index.php", "home", offline)) if r["goodsNo"] in products][:6]
+        attach_detail(products[no], parse_detail(fetch(f"/goods/goods_view.php?goodsNo={no}", f"view-{no}", offline,
+                                                          marker="item_detail_tit", refresh=refresh)))
+    print("[4/4] 메인 페이지 후기")
+    reviews = [r for r in parse_reviews(fetch("/main/index.php", "home", offline,
+                                               marker="reviewWrap", refresh=refresh))
+               if r["goodsNo"] in products][:6]
 
     def gallery(no, idx):
         g = products.get(no, {}).get("detail", {}).get("gallery", [])
@@ -467,10 +596,17 @@ def build(offline: bool = False) -> dict:
     print(f"\n생성: {OUT}")
     print(f"상품 {len(order)}개, 상세 {sum(1 for p in products.values() if 'detail' in p)}개, 후기 {len(reviews)}개")
     for top in CATEGORIES:
-        n = sum(1 for p in products.values() if p["top"] == top["code"])
-        print(f"  {top['code']} {top['name']}: {n}개")
+        n_top = sum(1 for p in products.values() if p["top"] == top["code"])
+        print(f"  {top['code']} {top['name']}: {n_top}개")
+        for child in top["children"]:
+            n = sum(1 for p in products.values() if child["code"] in p.get("cates", []))
+            print(f"    {child['code']} {child['name']}: {n}개")
+            if n == 0:
+                print(f"  경고: {child['code']} 목록이 비어 있음")
     missing = [p["no"] for p in products.values() if not p.get("price")]
     print(f"가격 누락: {len(missing)}개 {missing[:5]}")
+    soldout = [p["no"] for p in products.values() if "품절" in p.get("tags", [])]
+    print(f"품절 {len(soldout)}개")
     print(f"목록에서 건너뛴 블록: {total_skipped}개")
     bad_detail = [p["no"] for p in products.values() if "detail" in p and
                   (len(p["detail"].get("shipping") or "") > 60 or not p["detail"].get("gallery"))]
@@ -484,4 +620,4 @@ def build(offline: bool = False) -> dict:
 
 
 if __name__ == "__main__":
-    build(offline="--offline" in sys.argv)
+    build(offline="--offline" in sys.argv, refresh="--refresh" in sys.argv)

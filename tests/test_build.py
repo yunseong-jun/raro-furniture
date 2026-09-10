@@ -1,4 +1,4 @@
-import sys, pathlib, unittest
+import sys, pathlib, tempfile, unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "data"))
 import build  # noqa: E402
@@ -32,6 +32,50 @@ LIST_HTML = """
 </div></div></li>
 """
 
+# 실제 마크업(data/raw/list-003004.html)에서 품절 상품은 위시 버튼(data-goods-no)이 아예 빠지고
+# goods_view.php 링크와 icon_soldout.gif 아이콘만 남는다.
+SOLDOUT_ITEM_HTML = """
+<li class="item_soldout" style="width:25%;">
+<div class="item_cont">
+<div class="item_photo_box" data-image-main = "https://furnius.hgodo.com/img/thumbnail/1000000450_300.jpg">
+<a href="../goods/goods_view.php?goodsNo=1000000450" >
+<img  src="https://furnius.hgodo.com/img/thumbnail/1000000450_300.jpg" alt="몽크 600+700 사각 2단 포세린 통 세라믹 거실 테이블" class="middle"  />
+<strong class="item_soldout_bg" style="background-image:url(/data/icon/goods_icon/custom/soldout_overlay);">SOLD OUT</strong>
+</a>
+</div>
+<div class="item_info_cont">
+<div class="item_tit_box">
+<a href="../goods/goods_view.php?goodsNo=1000000450">
+<strong class="item_name">몽크 600+700 사각 2단 포세린 통 세라믹 거실 테이블</strong>
+</a>
+</div>
+<div class="item_money_box">
+<strong class="item_price">
+<div class="dcPrice" custom="240000.00" price="101000.00"></div>
+<span  style="">101,000원 </span>
+</strong>
+</div>
+<div class="item_review_cnt">REVIEW : 1</div>
+<div class="item_icon_box">
+<img src="https://cdn-saas-web-116-148.cdn-nhncommerce.com/furnius9462_godomall_com/data/icon/goods_icon/icon_soldout.gif" alt="품절" />
+</div>
+</div>
+</div>
+</li>
+"""
+
+# 실제 마크업(data/raw/list-012004.html)에서 data-image-detail 이 상품 이미지가 아니라
+# "roman_mar4_logo_01.jpg" 같은 로고성 파일명을 가리키는 경우가 있다.
+LOGO_IMAGE_ITEM_HTML = """
+<li><div class="item_cont">
+<div class="item_photo_box" data-image-main = "https://furnius.hgodo.com/img/thumbnail/1000000900_400.jpg" data-image-detail = "https://furnius.hgodo.com/img/thumbnail/roman/roman_mar4_logo_01.jpg">
+<button class="btn_add_wish_widget" data-goods-no="1000000900"></button></div>
+<div class="item_tit_box"><strong class="item_name">테스트 상품</strong></div>
+<div class="item_money_box"><strong class="item_price"><span>10,000원</span></strong></div>
+<div class="item_review_cnt">REVIEW : 0</div>
+</div></li>
+"""
+
 DETAIL_HTML = """
 <input type="hidden" name="set_goods_price" value="398000" />
 <input type="hidden" id="set_goods_fixedPrice" name="set_goods_fixedPrice" value="500000.00" />
@@ -43,11 +87,13 @@ DETAIL_HTML = """
 <dl class="item_price"><dt>판매가</dt><dd><strong><strong>398,000</strong></strong>원</dd></dl>
 <dl class="item_delivery"><dt>배송비</dt><dd><strong>40,000원</strong> / 상품수령시결제(착불) <span class="btn_layer"><a href="#lyDelivery">조건별배송</a></span><div id="lyDelivery">긴 표 내용 긴 표 내용 긴 표 내용</div></dd></dl>
 <script>detailKeyID[0] = "<img  src=\\"https://furnius.hgodo.com/img/thumbnail/1000000491_1000_1.jpg\\" width=\\"600\\" />"; detailKeyID[1] = "<img  src=\\"https://furnius.hgodo.com/img/thumbnail/1000000491_1000_2.jpg\\" />";</script>
+<dt>구성</dt>
 <select name="optionNo_0" class="chosen-select"><option value=""> = 구성 선택 = </option><option value="1">식탁+의자2+벤치1</option><option value="2">식탁+의자4</option><option value="3">식탁 단품</option></select>
 <select name="optionNo_1"><option value=""> = 구성을 먼저 선택해 주세요 = </option></select>
 <img src="https://furnius.hgodo.com/img/banner/top_banner_01.jpg" />
 <div id="detail"><div class="item_goods_tab"><ul><li><a href="#reviews">상품후기 <strong>(12)</strong></a></li><li><a href="#qna">상품문의 <strong>(3)</strong></a></li></ul></div>
 <img src="https://furnius.hgodo.com/table/ceramic/hug_ce4_01.jpg" /><img src="https://furnius.hgodo.com/table/ceramic/hug_ce4_02.jpg" /><img src="https://furnius.hgodo.com/info/company.jpg" />
+<img src="https://furnius.hgodo.com/banner/event_bnr.jpg" /><img src="https://furnius.hgodo.com/table/ceramic/ceramic_video_01.jpg" /><img src="https://furnius.hgodo.com/sofa/cona_sofa4_gift.jpg" /><img src="https://furnius.hgodo.com/table/wood/care_notice.jpg" /><img src="https://furnius.hgodo.com/delivery/chair_money_1box.jpg" />
 <div class="datail_table"><table class="left_table_type"><tbody>
 <tr><th style="width:20%">품명</th><td colspan="3">상세페이지 참조</td></tr>
 <tr><th style="width:20%">KC 인증정보</th><td colspan="3">KC인증대상아님</td></tr>
@@ -55,6 +101,37 @@ DETAIL_HTML = """
 <tr><th>AS 책임자와 전화번호</th><td>[라로퍼니처 고객센터] 031 ) 977 - 7352</td></tr>
 <tr><th>크기</th><td>상품상세참조</td></tr>
 </tbody></table></div></div>
+"""
+
+# 실제 마크업(data/raw/view-1000000104.html)의 optionSnoInput 셀렉트를 그대로 옮긴 조각.
+# value 형식: "옵션일련번호||추가금액||||...^|^옵션명" — 두 번째 필드가 delta(음수 가능).
+OPTION_SNO_HTML = """
+<div class="item_add_option_box">
+<dl>
+<dt>구성</dt>
+<dd>
+<select name="optionSnoInput" class="chosen-select" onchange="gd_option_image_apply();goodsViewController.option_price_display(this);">
+<option value="">
+    =
+옵션
+ : 가격
+: 재고                                        =
+</option>
+<option  data-img-src="https://cdn-saas-web-116-148.cdn-nhncommerce.com/furnius9462_godomall_com/data/commonimg/ico_noimg_100.gif" value="196||-114000||||0^|^원형 테이블 1000" alt="원형 테이블 1000">
+원형 테이블 1000
+
+ : -114,000원                                    </option>
+<option  data-img-src="https://cdn-saas-web-116-148.cdn-nhncommerce.com/furnius9462_godomall_com/data/commonimg/ico_noimg_100.gif" value="197||0||||0^|^원형 테이블1+의자2" alt="원형 테이블1+의자2">
+원형 테이블1+의자2
+</option>
+<option  data-img-src="https://cdn-saas-web-116-148.cdn-nhncommerce.com/furnius9462_godomall_com/data/commonimg/ico_noimg_100.gif" value="199||111000||||0^|^원형 테이블1+의자4" alt="원형 테이블1+의자4">
+원형 테이블1+의자4
+
+ : +111,000원                                    </option>
+</select>
+</dd>
+</dl>
+</div>
 """
 
 REVIEW_HTML = """
@@ -122,6 +199,44 @@ class ParseListTest(unittest.TestCase):
         self.assertEqual(len(items), 3)
         self.assertEqual(stats["skipped"], 1)
 
+    def test_soldout_item_falls_back_to_href_and_tags_soldout(self):
+        items = build.parse_list(SOLDOUT_ITEM_HTML)
+        self.assertEqual(len(items), 1)
+        p = items[0]
+        self.assertEqual(p["no"], "1000000450")
+        self.assertEqual(p["name"], "몽크 600+700 사각 2단 포세린 통 세라믹 거실 테이블")
+        self.assertIn("품절", p["tags"])
+
+    def test_normal_item_is_not_tagged_soldout(self):
+        p = build.parse_list(LIST_HTML)[0]
+        self.assertNotIn("품절", p["tags"])
+
+    def test_image_large_excludes_logo_and_banner(self):
+        items = build.parse_list(LOGO_IMAGE_ITEM_HTML)
+        self.assertEqual(items[0]["imageLarge"], "")
+
+
+class ListPageWarningsTest(unittest.TestCase):
+    def test_no_warning_when_counts_match(self):
+        items = build.parse_list(LIST_HTML)
+        self.assertEqual(build.list_page_warnings("012002", LIST_HTML, items), [])
+
+    def test_mismatch_gives_warning(self):
+        page = LIST_HTML + '<div data-goods-no="9999999"></div>'
+        items = build.parse_list(LIST_HTML)
+        msgs = build.list_page_warnings("012002", page, items)
+        self.assertEqual(len(msgs), 1)
+        self.assertIn("경고", msgs[0])
+        self.assertIn("012002", msgs[0])
+
+    def test_duplicate_exposure_gives_note_instead_of_warning(self):
+        items = build.parse_list(LIST_HTML)
+        items = items + [dict(items[0])]  # 같은 상품이 페이지에 두 번 노출된 경우
+        msgs = build.list_page_warnings("012002", LIST_HTML, items)
+        self.assertEqual(len(msgs), 1)
+        self.assertIn("참고", msgs[0])
+        self.assertIn("중복 노출", msgs[0])
+
 
 class ParseDetailTest(unittest.TestCase):
     def test_fields(self):
@@ -136,6 +251,9 @@ class ParseDetailTest(unittest.TestCase):
             "https://furnius.hgodo.com/img/thumbnail/1000000491_1000_1.jpg",
             "https://furnius.hgodo.com/img/thumbnail/1000000491_1000_2.jpg"])
         self.assertEqual([o["name"] for o in d["options"]], ["식탁+의자2+벤치1", "식탁+의자4", "식탁 단품"])
+        self.assertEqual([o["delta"] for o in d["options"]], [None, None, None])
+        self.assertEqual(d["optionLabel"], "구성")
+        self.assertEqual(d["optionLevels"], 1)
         self.assertEqual(d["detailImages"], [
             "https://furnius.hgodo.com/table/ceramic/hug_ce4_01.jpg",
             "https://furnius.hgodo.com/table/ceramic/hug_ce4_02.jpg"])
@@ -152,6 +270,23 @@ class ParseDetailTest(unittest.TestCase):
         self.assertIsNone(d["price"])
         self.assertEqual(d["cateCd"], "")
         self.assertEqual(d["colors"], [])
+        self.assertEqual(d["optionLabel"], "")
+        self.assertEqual(d["optionLevels"], 0)
+
+
+class ParseDetailOptionSnoTest(unittest.TestCase):
+    def test_option_sno_input_parsed_with_deltas(self):
+        d = build.parse_detail(OPTION_SNO_HTML)
+        self.assertEqual([o["name"] for o in d["options"]],
+                          ["원형 테이블 1000", "원형 테이블1+의자2", "원형 테이블1+의자4"])
+        self.assertEqual([o["delta"] for o in d["options"]], [-114000, 0, 111000])
+        self.assertEqual(d["optionLabel"], "구성")
+        self.assertEqual(d["optionLevels"], 1)
+
+    def test_option_levels_from_option_cnt_input(self):
+        html = '<input type="hidden" name="optionCntInput" value="2" />' + OPTION_SNO_HTML
+        d = build.parse_detail(html)
+        self.assertEqual(d["optionLevels"], 2)
 
 
 class ParseReviewsTest(unittest.TestCase):
@@ -204,9 +339,13 @@ class DeriveTest(unittest.TestCase):
 
 class PriceBandTest(unittest.TestCase):
     def test_bands(self):
-        self.assertEqual(build.price_band(178000), "30만원 이하")
-        self.assertEqual(build.price_band(300000), "30만원 이하")
+        self.assertEqual(build.price_band(64000), "10만원 이하")
+        self.assertEqual(build.price_band(100000), "10만원 이하")
+        self.assertEqual(build.price_band(178000), "10–20만원")
+        self.assertEqual(build.price_band(200000), "10–20만원")
+        self.assertEqual(build.price_band(300000), "20–30만원")
         self.assertEqual(build.price_band(398000), "30–50만원")
+        self.assertEqual(build.price_band(500000), "30–50만원")
         self.assertEqual(build.price_band(689000), "50만원 이상")
         self.assertIsNone(build.price_band(None))
 
@@ -218,6 +357,7 @@ class AssembleTest(unittest.TestCase):
                 "colors": [], "tags": []}
         p = build.assemble_product(item, cate="012002", top="012")
         self.assertEqual(p["cate"], "012002")
+        self.assertEqual(p["cates"], ["012002"])
         self.assertEqual(p["top"], "012")
         self.assertEqual(p["series"], "허그")
         self.assertEqual(p["priceBand"], "30–50만원")
@@ -228,7 +368,7 @@ class AssembleTest(unittest.TestCase):
         build.attach_detail(p, detail)
         self.assertEqual(p["listPrice"], 500000)
         self.assertEqual(p["detail"]["gallery"], ["g1.jpg", "g2.jpg"])
-        self.assertEqual(len(p["features"]), 3)
+        self.assertNotIn("features", p)
         self.assertEqual(p["reviewCount"], 84)
 
     def test_categories_have_required_text(self):
@@ -237,6 +377,38 @@ class AssembleTest(unittest.TestCase):
             self.assertTrue(top["guide"]["title"] and top["guide"]["body"])
             self.assertTrue(top["children"])
             self.assertIn(top["code"], build.FEATURES)
+
+    def test_all_categories_have_three_features(self):
+        self.assertTrue(all(len(c["features"]) == 3 for c in build.CATEGORIES))
+
+
+class RegisterItemTest(unittest.TestCase):
+    def _item(self, no="1"):
+        return {"no": no, "name": "테스트 세라믹 식탁", "image": "", "imageLarge": "", "price": 100000,
+                "listPrice": None, "reviewCount": 0, "colors": [], "tags": []}
+
+    def test_first_registration_sets_cate_and_cates(self):
+        products, order = {}, []
+        build.register_item(products, order, self._item(), "012002", "012")
+        self.assertEqual(products["1"]["cate"], "012002")
+        self.assertEqual(products["1"]["cates"], ["012002"])
+        self.assertEqual(order, ["1"])
+
+    def test_second_list_page_appends_cate_keeps_first_as_primary(self):
+        products, order = {}, []
+        build.register_item(products, order, self._item(), "012002", "012")
+        build.register_item(products, order, self._item(), "012003", "012")
+        self.assertEqual(products["1"]["cate"], "012002")
+        self.assertEqual(products["1"]["cates"], ["012002", "012003"])
+        self.assertEqual(order, ["1"])
+
+    def test_same_cate_seen_twice_is_not_duplicated(self):
+        products, order = {}, []
+        build.register_item(products, order, self._item(), "012002", "012")
+        build.register_item(products, order, self._item(), "012003", "012")
+        build.register_item(products, order, self._item(), "012002", "012")
+        self.assertEqual(products["1"]["cates"], ["012002", "012003"])
+        self.assertEqual(order, ["1"])
 
 
 class TopOfTest(unittest.TestCase):
@@ -259,11 +431,101 @@ class ProductFromDetailTest(unittest.TestCase):
              "colors": [{"name": "흰색", "hex": "#FFFFFF"}], "reviewCount": 12, "qnaCount": 3}
         p = build.product_from_detail("1000000491", d)
         self.assertEqual(p["cate"], "012002")
+        self.assertEqual(p["cates"], ["012002"])
         self.assertEqual(p["top"], "012")
         self.assertEqual(p["image"], "g1.jpg")
         self.assertEqual(p["series"], "허그")
-        self.assertEqual(len(p["features"]), 3)
+        self.assertNotIn("features", p)
         self.assertIs(p["detail"], d)
+
+    def _detail(self, cate_cd):
+        return {"name": "미분류 상품", "cateCd": cate_cd,
+                "price": 50000, "listPrice": None, "shipping": "",
+                "gallery": [], "options": [], "detailImages": [], "spec": {},
+                "colors": [], "reviewCount": 0, "qnaCount": 0}
+
+    def test_unknown_category_does_not_raise(self):
+        p = build.product_from_detail("9999999", self._detail("005001"))
+        self.assertEqual(p["top"], "005")
+        self.assertEqual(p["cate"], "005001")
+
+    def test_empty_category_does_not_raise(self):
+        p = build.product_from_detail("9999999", self._detail(""))
+        self.assertIsNone(p["top"])
+
+
+class FakeHTTPResponse:
+    """urllib.request.urlopen 을 대체할 오프라인 테스트용 가짜 응답."""
+
+    def __init__(self, body: str):
+        self._body = body.encode("utf-8")
+
+    def read(self):
+        return self._body
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
+
+
+class FetchTest(unittest.TestCase):
+    def setUp(self):
+        self._tmpdir = tempfile.TemporaryDirectory()
+        self._orig_raw = build.RAW
+        self._orig_urlopen = build.urllib.request.urlopen
+        self._orig_sleep = build.time.sleep
+        build.RAW = pathlib.Path(self._tmpdir.name)
+        build.time.sleep = lambda seconds: None  # 테스트에서 실제로 대기하지 않는다
+
+    def tearDown(self):
+        build.RAW = self._orig_raw
+        build.urllib.request.urlopen = self._orig_urlopen
+        build.time.sleep = self._orig_sleep
+        self._tmpdir.cleanup()
+
+    def test_cache_hit_returns_text_without_network(self):
+        (build.RAW / "cached.html").write_text("cached body", encoding="utf-8")
+
+        def boom(*a, **k):
+            raise AssertionError("네트워크를 사용하면 안 됨")
+        build.urllib.request.urlopen = boom
+
+        text = build.fetch("/x", "cached", offline=False)
+        self.assertEqual(text, "cached body")
+
+    def test_missing_cache_offline_raises_system_exit(self):
+        with self.assertRaises(SystemExit):
+            build.fetch("/x", "missing", offline=True)
+
+    def test_body_without_marker_raises_and_does_not_cache(self):
+        build.urllib.request.urlopen = lambda req, timeout=30: FakeHTTPResponse("<html>엉뚱한 페이지</html>")
+        with self.assertRaises(SystemExit):
+            build.fetch("/goods/goods_list.php?cateCd=012002", "badmarker", offline=False, marker="item_cont")
+        self.assertFalse((build.RAW / "badmarker.html").exists())
+
+    def test_retries_once_then_succeeds(self):
+        calls = {"n": 0}
+
+        def flaky(req, timeout=30):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise build.urllib.error.URLError("일시적 오류")
+            return FakeHTTPResponse("<div class='item_cont'>ok</div>")
+        build.urllib.request.urlopen = flaky
+
+        text = build.fetch("/x", "retry-ok", offline=False, marker="item_cont")
+        self.assertIn("item_cont", text)
+        self.assertEqual(calls["n"], 2)
+
+    def test_second_failure_raises_system_exit(self):
+        def always_fails(req, timeout=30):
+            raise build.urllib.error.URLError("영구 오류")
+        build.urllib.request.urlopen = always_fails
+
+        with self.assertRaises(SystemExit):
+            build.fetch("/x", "fail-twice", offline=False, marker="item_cont")
 
 
 if __name__ == "__main__":
