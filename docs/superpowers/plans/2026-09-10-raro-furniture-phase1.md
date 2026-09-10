@@ -805,7 +805,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 
 한 파일에 섹션 주석으로 구분한다. 순서: 토큰 → 리셋 → 레이아웃 → 타이포 → 버튼·칩 → 헤더·드로어 → 카드·그리드 → 메인 섹션 → 목록 → 상세 → 브랜드 → 푸터 → 유틸 → 반응형. 페이지별 규칙은 Task 6–9에서 이 파일의 해당 섹션에 이미 포함되어 있으므로, 그 Task들에서는 CSS를 추가로 쓰지 않는다.
 
-- [ ] **Step 1: style.css 작성**
+- [x] **Step 1: style.css 작성**
 
 `assets/style.css`:
 ```css
@@ -1203,12 +1203,12 @@ del { text-decoration: line-through; }
 }
 ```
 
-- [ ] **Step 2: 문법 확인**
+- [x] **Step 2: 문법 확인**
 
 Run: `python -c "import re,io;s=open('assets/style.css',encoding='utf-8').read();print('braces', s.count('{'), s.count('}'))"`
 Expected: 두 숫자가 같음(여는/닫는 중괄호 수 일치).
 
-- [ ] **Step 3: 커밋**
+- [x] **Step 3: 커밋**
 
 ```bash
 git add assets/style.css && git commit -m "feat(style): 디자인 토큰과 공통 컴포넌트 스타일
