@@ -310,6 +310,95 @@ window.RARO = (function () {
       + (reviews.length ? '' : '<div class="notice">후기를 불러오지 못했습니다.</div>');
   };
 
+  pages.list = function (data) {
+    const cate = param('cate') || 'all', q = param('q') || '', sale = param('sale') === '1';
+    const top = cate === 'all' ? null : topOfCate(cate);
+    const topDef = top ? cateDef(data, top) : null;
+    const isChild = !!top && cate !== top;
+    const title = q ? '"' + q + '" 검색 결과' : !topDef ? (sale ? '이번 주 특가' : '전체 상품') : isChild ? childName(cate) : topDef.name;
+    document.title = title + ' — 라로퍼니처';
+    document.querySelector('[data-title]').textContent = title;
+    document.querySelector('[data-desc]').textContent = topDef ? topDef.desc : (q ? '상품명에 검색어가 모두 포함된 상품입니다.' : '라로퍼니처의 모든 가구를 한 번에.');
+    document.querySelector('[data-crumb]').innerHTML = '<a href="index.html">홈</a> › '
+      + (topDef ? '<a href="list.html?cate=' + top + '">' + esc(topDef.name) + '</a>' : '전체 상품') + (isChild ? ' › ' + esc(childName(cate)) : '');
+    /* 기본 목록 (소분류는 cates 기준) */
+    let base = data.products.filter((p) => !top || p.top === top);
+    if (q) base = searchProducts(base, q);
+    if (sale) base = base.filter((p) => discountRate(p.price, p.listPrice) > 0);
+    const subEl = document.querySelector('[data-subcats]');
+    if (topDef) {
+      subEl.innerHTML = '<a class="chip' + (!isChild ? ' is-on' : '') + '" href="list.html?cate=' + top + '">전체 ' + base.length + '</a>'
+        + topDef.children.map((c) => '<a class="chip' + (cate === c.code ? ' is-on' : '') + '" href="list.html?cate=' + c.code + '">' + esc(c.name)
+          + ' <span class="muted">' + base.filter((p) => inCate(p, c.code)).length + '</span></a>').join('');
+    } else { subEl.remove(); }
+    if (isChild) base = base.filter((p) => inCate(p, cate));
+    /* 필터 (소분류 안에서는 종류 필터 제외) */
+    const defs = (FILTER_DEFS[top || 'all'] || []).filter(([k]) => !(isChild && k === 'cate'));
+    const active = {};
+    const groupsEl = document.querySelector('[data-filter-groups]');
+    groupsEl.innerHTML = defs.map(([k, label]) => {
+      const opts = filterOptions(base, k);
+      if (opts.length < 2) return '';
+      return '<fieldset class="filters__group"><legend><h5>' + esc(label) + '</h5></legend>' + opts.map((v) =>
+        '<label><input type="checkbox" data-key="' + k + '" value="' + esc(v) + '"> ' + esc(labelFor(k, v)) + '</label>').join('') + '</fieldset>';
+    }).join('');
+    const sortEl = document.querySelector('[data-sort]');
+    sortEl.value = ['reco', 'popular', 'priceAsc', 'priceDesc', 'review', 'new'].includes(param('sort')) ? param('sort') : 'reco';
+    let shown = 12;
+    const grid = document.querySelector('[data-grid]'), countEl = document.querySelector('[data-count]');
+    const moreBtn = document.querySelector('[data-more]'), activeEl = document.querySelector('[data-active]');
+    function render() {
+      const list = sortProducts(applyFilters(base, active), sortEl.value);
+      countEl.textContent = list.length;
+      if (!base.length) {
+        grid.innerHTML = '<div class="list__empty">' + (q ? '검색 결과가 없습니다. 다른 검색어로 찾아보세요.' : '준비 중인 카테고리입니다. 다른 카테고리를 둘러보세요.') + '</div>';
+      } else {
+        renderCards(grid, list.slice(0, shown), { eagerFirst: true });
+      }
+      moreBtn.parentNode.style.display = list.length > shown ? '' : 'none';
+      moreBtn.textContent = Math.min(12, list.length - shown) + '개 더 보기';
+      activeEl.innerHTML = Object.entries(active).flatMap(([k, set]) => Array.from(set).map((v) =>
+        '<button type="button" class="chip is-on chip--x" data-key="' + k + '" data-value="' + esc(v) + '" aria-label="' + esc(labelFor(k, v)) + ' 필터 해제">' + esc(labelFor(k, v)) + '</button>')).join('');
+    }
+    groupsEl.addEventListener('change', (e) => {
+      const i = e.target; if (!i.matches('input')) return;
+      active[i.dataset.key] = active[i.dataset.key] || new Set();
+      if (i.checked) active[i.dataset.key].add(i.value); else active[i.dataset.key].delete(i.value);
+      shown = 12; render();
+    });
+    activeEl.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-key]'); if (!b) return;
+      active[b.dataset.key].delete(b.dataset.value);
+      groupsEl.querySelectorAll('input[data-key="' + b.dataset.key + '"]').forEach((cb) => { if (cb.value === b.dataset.value) cb.checked = false; });
+      shown = 12; render();
+    });
+    document.querySelector('[data-filters-reset]').addEventListener('click', () => {
+      Object.keys(active).forEach((k) => active[k].clear());
+      groupsEl.querySelectorAll('input').forEach((i) => { i.checked = false; });
+      shown = 12; render();
+    });
+    sortEl.addEventListener('change', () => { shown = 12; render(); });
+    moreBtn.addEventListener('click', () => { shown += 12; render(); });
+    /* 모바일 필터 시트 */
+    const sheet = document.querySelector('[data-filters]'), backdrop = document.querySelector('[data-filters-backdrop]');
+    const openBtn = document.querySelector('[data-filters-open]');
+    const openSheet = (o) => {
+      sheet.classList.toggle('is-open', o); backdrop.classList.toggle('is-open', o);
+      openBtn.setAttribute('aria-expanded', String(o));
+      if (o) { const first = sheet.querySelector('input, button'); if (first) first.focus(); } else { openBtn.focus(); }
+    };
+    openBtn.addEventListener('click', () => openSheet(true));
+    document.querySelectorAll('[data-filters-close]').forEach((b) => b.addEventListener('click', () => openSheet(false)));
+    backdrop.addEventListener('click', () => openSheet(false));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sheet.classList.contains('is-open')) openSheet(false); });
+    /* 구매 가이드 */
+    const g = topDef ? topDef.guide : { title: '어떤 가구를 찾으세요?',
+      body: '식탁은 인원과 공간 폭, 소파는 거실 폭, 침대는 매트리스 규격부터 확인하면 고르기 쉽습니다. 카테고리를 고르면 맞춤 가이드가 나옵니다.' };
+    document.querySelector('[data-guide-title]').textContent = g.title;
+    document.querySelector('[data-guide-body]').textContent = g.body;
+    render();
+  };
+
   /* ==== END PAGES ==== */
 
   async function init() {

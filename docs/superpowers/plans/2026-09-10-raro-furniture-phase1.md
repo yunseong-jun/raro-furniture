@@ -1744,7 +1744,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Create: `list.html`
 - Modify: `assets/app.js` (`/* ==== END PAGES ==== */` 바로 위에 `pages.list` 추가)
 
-- [ ] **Step 1: list.html 작성**
+- [x] **Step 1: list.html 작성**
 
 `list.html`:
 ```html
@@ -1809,7 +1809,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 </html>
 ```
 
-- [ ] **Step 2: pages.list 추가**
+- [x] **Step 2: pages.list 추가**
 
 `assets/app.js`의 `/* ==== END PAGES ==== */` 바로 위에 추가:
 ```js
@@ -1892,7 +1892,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
   };
 ```
 
-- [ ] **Step 3: 브라우저 확인**
+- [x] **Step 3: 브라우저 확인**
 
 Run:
 ```bash
@@ -1903,7 +1903,7 @@ E="/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"; C="--headless=
 ```
 Read 도구로 두 스크린샷 확인. Expected: 제목 "세라믹 · 대리석 식탁" + 설명 + 소분류 칩 5개(전체 N 포함), 왼쪽 필터에 사이즈·형태·상판·구성·가격 그룹, 3열 카드 12개, "더 보기", 크림 가이드 띠. `data-count`가 0보다 큼.
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git add list.html assets/app.js docs/screenshots/list-desktop.png docs/screenshots/list-all-sale.png && git commit -m "feat(list): 상품 목록 — 소분류 칩, 자동 필터, 정렬, 더 보기, 구매 가이드
