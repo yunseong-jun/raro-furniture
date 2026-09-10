@@ -421,7 +421,6 @@ COMPANY = {
     "numbers": [{"value": "30", "unit": "여 년", "label": "가구 제조 기술력"},
                 {"value": "6", "unit": "개", "label": "자체 관리 제조 공장 (중국 4 · 베트남 2)"},
                 {"value": "5", "unit": "종", "label": "원목 · 대리석 · 화산석 · 세라믹 · 소파"}],
-    "showroomHours": "확인 필요",
 }
 
 

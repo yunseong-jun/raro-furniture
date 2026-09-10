@@ -7,6 +7,7 @@ rarofurniture.co.kr(고도몰)을 Article × Floyd 방향으로 다시 설계한
 ```bash
 # 1) 데이터 생성 (사이트에서 약 42개 페이지를 1초 간격으로 가져온다. 캐시가 있으면 재요청하지 않음)
 PYTHONIOENCODING=utf-8 python data/build.py
+#    캐시(data/raw/)만으로 다시 조립하려면 --offline, 캐시를 무시하고 새로 받으려면 --refresh
 
 # 2) 로컬 서버
 python -m http.server 8080
