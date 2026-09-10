@@ -170,7 +170,7 @@ del { text-decoration: line-through; }
 .hero__shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.08) 55%, rgba(0,0,0,0) 100%); }
 .hero__text { position: absolute; left: 0; right: 0; top: 17%; text-align: center; color: #fff; padding: 0 var(--gutter); }
 .hero__text .h1 { color: #fff; text-shadow: 0 1px 12px rgba(0,0,0,.15); }
-.hero__text p { font-size: 17px; opacity: .94; margin: 12px auto 24px; max-width: 560px; }
+.hero__text p:not(.h1) { font-size: 17px; opacity: .94; margin: 12px auto 24px; max-width: 560px; }
 .hero__dots { position: absolute; bottom: 22px; left: 0; right: 0; display: flex; justify-content: center; gap: 8px; }
 .hero__dots button { width: 24px; height: 24px; border-radius: 50%; border: 6px solid transparent; padding: 0; background: rgba(255,255,255,.5); background-clip: padding-box; }
 .hero__dots button.is-active { background: #fff; }
@@ -363,7 +363,7 @@ body.has-buybar .chat-fab { bottom: 84px; }   /* 하단 구매 바와 겹치지 
   .chat-fab { display: flex; }
   .hero { height: 62vw; min-height: 340px; }
   .hero__text { top: 14%; }
-  .hero__text p { font-size: 14px; margin: 8px auto 16px; }
+  .hero__text p:not(.h1) { font-size: 14px; margin: 8px auto 16px; }
   .band { padding: 40px 0; }
   .band__grid, .guide__grid, .showroom__grid { grid-template-columns: 1fr; gap: 20px; }
   .band__img { order: -1; }
